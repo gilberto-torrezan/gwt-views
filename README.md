@@ -12,21 +12,27 @@ For example:
 
 This is the LoginView, which can be accessed by anybody, and is the default view of the application (the first to be shown):
 
-	@View(value = "login", publicAccess = true, defaultView = true)
-	public class LoginView extends Composite {
-	//... your code, you can use UIBinder, procedural UI, whatever you like
+```java
+@View(value = "login", publicAccess = true, defaultView = true)
+public class LoginView extends Composite {
+//... your code, you can use UIBinder, procedural UI, whatever you like
+```
 
 This is the HomeView, which can be accessed by any logged user at the URL `#home`:
 
-	@View("home")
-	public class HomeView extends Composite {
-	//...
+```java
+@View("home")
+public class HomeView extends Composite {
+//...
+```
 
 And this is the AdminView, which can be accessed only by logged users with the "ADMIN" role at the URL `#admin`:
 
-	@View(value = "admin", rolesAllowed = "ADMIN")
-	public class AdminView extends Composite {
-	//...
+```java
+@View(value = "admin", rolesAllowed = "ADMIN")
+public class AdminView extends Composite {
+//...
+```
 
 ## Features
 
@@ -34,49 +40,59 @@ And this is the AdminView, which can be accessed only by logged users with the "
 
 Views can be defined using just the `@View` annotation. If you need a container with header, sidebars, footers and so on, and want the views to be shown inside that container, you can use a ViewContainer:
 
-	@ViewContainer
-	public class MainViewConatiner extends Composite implements HasViews {
-	//...
-		@Override
-		public void showView(URLToken token, Widget view) {
-			//put the view wherever you like in your layout
-		}
+```java
+@ViewContainer
+public class MainViewConatiner extends Composite implements HasViews {
+//...
+	@Override
+	public void showView(URLToken token, Widget view) {
+		//put the view wherever you like in your layout
+	}
+```
 
 The framework takes care of initiating the container and the views when needed. By default, all Views will be added into the ViewContainer. If you want a View to be shown outside the ViewContainer, you can use:
 
-	@View(value = "other", usesViewContainer = false)
+```java
+@View(value = "other", usesViewContainer = false)
+```
 	
 You can use more than a ViewContainer as well. In that case, you have to specify which View will Use each ViewContainer:
 
-	@View(value = "one", viewContainer = ViewContainerOne.class)
-	
-	@View(value = "two", viewContainer = ViewContainerTwo.class)
+```java
+@View(value = "one", viewContainer = ViewContainerOne.class)
+
+@View(value = "two", viewContainer = ViewContainerTwo.class)
+```
 	
 ### UserPresenceManager
 
 When using authenticated Views, the framework need to know if the user has the rights to see the page he is requesting. To do so, you need to setup your UserPresenceManager:
 
-	public class MyApp implements EntryPoint {
-		@Override
-		public void onModuleLoad() {
-			NavigationManager.setUserPresenceManager(new MyUserPresenceManager());
-		}
+```java
+public class MyApp implements EntryPoint {
+	@Override
+	public void onModuleLoad() {
+		NavigationManager.setUserPresenceManager(new MyUserPresenceManager());
 	}
+}
+```
 	
 The `MyUserPresenceManager` class only need to implement two methods:
 
-	public class MyUserPresenceManager implements UserPresenceManager {
-		
-		@Override
-		public void isUserLoggedIn(URLToken url, AsyncCallback<Boolean> callback) {
-			//call callback.onSucess(true) if the user is logged in, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise. 
-		}
+```java
+public class MyUserPresenceManager implements UserPresenceManager {
 	
-		@Override
-		public void isUserInAnyRole(URLToken url, String[] roles, AsyncCallback<Boolean> callback) {
-			//call callback.onSucess(true) if the user is in any of the roles, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise.
-		}
+	@Override
+	public void isUserLoggedIn(URLToken url, AsyncCallback<Boolean> callback) {
+		//call callback.onSucess(true) if the user is logged in, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise. 
 	}
+
+	@Override
+	public void isUserInAnyRole(URLToken url, String[] roles, AsyncCallback<Boolean> callback) {
+		//call callback.onSucess(true) if the user is in any of the roles, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise.
+	}
+}
+```
  
 The `isUserLoggedIn` and `isUserInAnyRole` are asynchronous by design. That is the point you will be able to communicate with the server to get more information about your user, if needed.
 
@@ -84,26 +100,30 @@ The `isUserLoggedIn` and `isUserInAnyRole` are asynchronous by design. That is t
 
 The framework can log an event at Google Analytics at each change of your Views. Do enable that, just configure your tracker ID and your domain (and, if you want, your GWT module as well):
 
-	GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
+```java
+GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
+```
 	
 You need to include the `ga.js` file in your host page to be able to track events. Here is one way to include it:
 
-	<head>
-		<script type="text/javascript">
-		    function lazyLoadScripts(){
-				function createScript(url) {
-			        var s = document.createElement('script');
-			        s.type = 'text/javascript';
-			        s.async = true;
-			        s.defer = true;
-			        s.src = url;
-			        document.getElementsByTagName('head')[0].appendChild(s);            
-			    }
-				createScript(('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js');
+```html
+<head>
+	<script type="text/javascript">
+	    function lazyLoadScripts(){
+			function createScript(url) {
+		        var s = document.createElement('script');
+		        s.type = 'text/javascript';
+		        s.async = true;
+		        s.defer = true;
+		        s.src = url;
+		        document.getElementsByTagName('head')[0].appendChild(s);            
 		    }
-		</script>
-	</head>
-	<body onload="lazyLoadScripts();">
+			createScript(('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js');
+	    }
+	</script>
+</head>
+<body onload="lazyLoadScripts();">
+```
 
 ### Presenters, code splitting and caching
 
@@ -111,23 +131,30 @@ The framework automatically creates presenters for your Views, which handle all 
 
 The Views are cacheable by default. That means if you users goes to "#1", and then to the View "#2", and goes back to "#1" (by either pressing the back button of the browser, or typing directly at the URL bar, or clicking on an anchor), the "#1" View will be at the same state as when he left it. That behaviour, can be disabled if you wish (makes sense at login pages, for example):
 
-	@View(value = "login", publicAccess = true, defaultView = true, cacheable = false)
-	public class LoginView extends Composite {
-	//... 
+```java
+@View(value = "login", publicAccess = true, defaultView = true, cacheable = false)
+public class LoginView extends Composite {
+//...
+```
 	
 If you want a specific functionality for your View that demands a custom Presenter, you can setup it too:
 
-	@View(value = "custom", customPresenter = MyPresenter.class)
-	public class CustomView extends Composite {
+```java
+@View(value = "custom", customPresenter = MyPresenter.class)
+public class CustomView extends Composite {
+//...
+```
 	
 Your Presenter only needs to implement one method:
 
-	public class MyPresenter implements Presenter<CustomView> {
-		
-		@Override
-		public CustomView getWidget(){
-			//creates and returns your CustomView. You have to handle the caching if you want, but the code splitting is still garanteed by the framework.
-		}
+```java
+public class MyPresenter implements Presenter<CustomView> {
+	
+	@Override
+	public CustomView getWidget(){
+		//creates and returns your CustomView. You have to handle the caching if you want, but the code splitting is still garanteed by the framework.
+	}
+```
 
 ### Redirection
 
@@ -139,47 +166,53 @@ When the user tries to access a page he is not allowed to (because be doesn't ha
 
 Add the dependency of the GWT Views in your project:
 
-	<dependency>
-		<groupId>com.github.gilbertotorrezan</groupId>
-		<artifactId>gwt-views</artifactId>
-		<version>1.0.0</version>
-		<scope>provided</scope>
-	</dependency>
-	<dependency>
-		<groupId>com.github.gilbertotorrezan</groupId>
-		<artifactId>gwt-views</artifactId>
-		<version>1.0.0</version>
-		<classifier>sources</classifier>
-		<scope>provided</scope>
-	</dependency>
+```xml
+<dependency>
+	<groupId>com.github.gilbertotorrezan</groupId>
+	<artifactId>gwt-views</artifactId>
+	<version>1.0.0</version>
+	<scope>provided</scope>
+</dependency>
+<dependency>
+	<groupId>com.github.gilbertotorrezan</groupId>
+	<artifactId>gwt-views</artifactId>
+	<version>1.0.0</version>
+	<classifier>sources</classifier>
+	<scope>provided</scope>
+</dependency>
+```
 
 ### GWT module
 
 Add the gwtviews module to your project.gwt.xml:
 
-	<inherits name="com.github.gilbertotorrezan.gwtviews.gwtviews"/>
+```xml
+<inherits name="com.github.gilbertotorrezan.gwtviews.gwtviews"/>
+```
 	
 ### Code setup
 
 At your module EntryPoint, start the framework:
 
-	public class MyApp implements EntryPoint {
-		@Override
-		public void onModuleLoad() {
-			
-			//configuring the google analytics tracker
-			GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
-			
-			//configuring the user presence manager			
-			NavigationManager.setUserPresenceManager(new MyUserPresenceManager());
-			
-			//creating the root container of the application
-			RootLayoutPanel root = RootLayoutPanel.get();
-			
-			//starting up
-			NavigationManager.start(root);
-		}
+```java
+public class MyApp implements EntryPoint {
+	@Override
+	public void onModuleLoad() {
+		
+		//configuring the google analytics tracker
+		GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
+		
+		//configuring the user presence manager			
+		NavigationManager.setUserPresenceManager(new MyUserPresenceManager());
+		
+		//creating the root container of the application
+		RootLayoutPanel root = RootLayoutPanel.get();
+		
+		//starting up
+		NavigationManager.start(root);
 	}
+}
+```
 	
 ## License
 
