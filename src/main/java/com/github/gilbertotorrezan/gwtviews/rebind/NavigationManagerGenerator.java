@@ -244,7 +244,7 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.println("presentersMap.put(\""+view.value()+"\", presenter);");				
 			sourceWriter.outdent();
 			sourceWriter.println("}");
-			sourceWriter.println("Widget widget = presenter.getWidget();");
+			sourceWriter.println("Widget widget = presenter.getView(token);");
 			if (view.usesViewContainer() && !viewContainers.isEmpty()){
 				Class<?> viewContainer = view.viewContainer();
 				HasViewPages hasViews;
@@ -273,7 +273,7 @@ public class NavigationManagerGenerator extends Generator {
 				sourceWriter.println("presentersMap.put(\"@"+hasViews.getType().getName()+"\", containerPresenter);");
 				sourceWriter.outdent();
 				sourceWriter.println("}");
-				sourceWriter.println("Widget container = containerPresenter.getWidget();");
+				sourceWriter.println("Widget container = containerPresenter.getView(token);");
 				sourceWriter.println("(("+HasViews.class.getName()+") container).showView(token, widget);");
 				sourceWriter.println("if (container.getParent() == null){");
 				sourceWriter.indent();

@@ -151,7 +151,7 @@ Your Presenter only needs to implement one method:
 public class MyPresenter implements Presenter<CustomView> {
 	
 	@Override
-	public CustomView getWidget(){
+	public CustomView getView(URLToken url){
 		//creates and returns your CustomView. You have to handle the caching if you want, but the code splitting is still garanteed by the framework.
 	}
 ```

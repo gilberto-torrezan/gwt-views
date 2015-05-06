@@ -86,13 +86,16 @@ public class PresenterGenerator extends Generator {
 		
 		if (cacheable){
 			sourceWriter.println("private Widget view;");
+			sourceWriter.println("private String lastUrl;");
 		}
-		sourceWriter.println("\n@Override\npublic Widget getWidget() {");
+		sourceWriter.println("\n@Override\npublic Widget getView(URLToken url) {");
 		sourceWriter.indent();
 		if (cacheable){
-			sourceWriter.println("if (view == null) {");
+			sourceWriter.println("String token = url.toString();");
+			sourceWriter.println("if (view == null || lastUrl == null || !lastUrl.equals(token)) {");
 			sourceWriter.indent();
 			sourceWriter.println("view = new "+viewType.getQualifiedSourceName()+"();");
+			sourceWriter.println("lastUrl = token;");
 			sourceWriter.outdent();
 			sourceWriter.println("}");
 			sourceWriter.println("return view;");

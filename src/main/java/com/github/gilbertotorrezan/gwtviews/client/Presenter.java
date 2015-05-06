@@ -33,6 +33,6 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public interface Presenter<I extends Widget> {
 	
-	I getWidget();
+	I getView(URLToken url);
 
 }
