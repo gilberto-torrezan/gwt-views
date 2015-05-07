@@ -98,7 +98,7 @@ The `isUserLoggedIn` and `isUserInAnyRole` are asynchronous by design. That is t
 
 ### GoogleAnalyticsTracker
 
-The framework can log an event at Google Analytics at each change of your Views. Do enable that, just configure your tracker ID and your domain (and, if you want, your GWT module as well):
+The framework can log an event at Google Analytics at each change of your Views. To enable that, just configure your tracker ID and your domain (and, if you want, your GWT module as well):
 
 ```java
 GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
