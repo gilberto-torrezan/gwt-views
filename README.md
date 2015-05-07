@@ -168,13 +168,13 @@ Add the dependency of the GWT Views in your project:
 
 ```xml
 <dependency>
-	<groupId>com.github.gilbertotorrezan</groupId>
+	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
 	<version>1.0.0</version>
 	<scope>provided</scope>
 </dependency>
 <dependency>
-	<groupId>com.github.gilbertotorrezan</groupId>
+	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
 	<version>1.0.0</version>
 	<classifier>sources</classifier>
