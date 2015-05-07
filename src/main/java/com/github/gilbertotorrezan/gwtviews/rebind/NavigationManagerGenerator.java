@@ -34,6 +34,7 @@ import java.util.Set;
 
 import com.github.gilbertotorrezan.gwtviews.client.HasViews;
 import com.github.gilbertotorrezan.gwtviews.client.Presenter;
+import com.github.gilbertotorrezan.gwtviews.client.URLInterceptor;
 import com.github.gilbertotorrezan.gwtviews.client.View;
 import com.github.gilbertotorrezan.gwtviews.client.ViewContainer;
 import com.google.gwt.core.ext.Generator;
@@ -82,7 +83,9 @@ public class NavigationManagerGenerator extends Generator {
 		sourceWriter.println("//AUTO GENERATED FILE BY GWT-VIEWS. DO NOT EDIT!\n");
 		sourceWriter.println("private Panel rootContainer;");
 		sourceWriter.println("private UserPresenceManager userPresenceManager;");
-		sourceWriter.println("private final Map<String, Presenter<?>> presentersMap = new HashMap<>();\n");
+		sourceWriter.println("private final Map<String, Presenter<?>> presentersMap = new HashMap<>();");
+		sourceWriter.println("private URLToken currentToken = new URLToken(\"\");");
+		sourceWriter.println("private URLInterceptor currentInterceptor;\n");
 		
 		List<ViewPage> viewPages = new ArrayList<>();
 		Map<String, HasViewPages> viewContainers = new HashMap<>();
@@ -91,6 +94,7 @@ public class NavigationManagerGenerator extends Generator {
 		Set<HasViewPages> containersInNeedOfPresenters = new LinkedHashSet<>();
 		
 		ViewPage defaultViewPage = null;
+		ViewPage notFoundViewPage = null;
 		HasViewPages defaultViewContainer = null;
 		
 		JClassType containerType = typeOracle.findType(HasViews.class.getName());
@@ -107,6 +111,9 @@ public class NavigationManagerGenerator extends Generator {
 				viewPages.add(page);
 				if (view.defaultView()){
 					defaultViewPage = page;
+				}
+				if (view.notFoundView()){
+					notFoundViewPage = page;
 				}
 			}
 			else if (type.isAnnotationPresent(ViewContainer.class)){
@@ -144,15 +151,59 @@ public class NavigationManagerGenerator extends Generator {
 		sourceWriter.println("public void onValueChange(ValueChangeEvent<String> event){");
 		sourceWriter.indent();
 		sourceWriter.println("final URLToken token = new URLToken(event.getValue());");
+		
+		sourceWriter.println("if (currentInterceptor != null){");
+		sourceWriter.indent();
+				
+		sourceWriter.println("History.newItem(currentToken.toString(), false);");
+		sourceWriter.println("currentInterceptor.onUrlChanged(currentToken, token, new URLInterceptorCallback(){");
+		sourceWriter.indent();
+		sourceWriter.println("@Override\npublic void proceedTo(URLToken destination){");
+		sourceWriter.indent();
+		sourceWriter.println("History.newItem(destination.toString(), false);");
+		sourceWriter.println("proceedToImpl(destination);");
+		sourceWriter.outdent();
+		sourceWriter.println("}");
+		
+		sourceWriter.outdent();
+		sourceWriter.println("});");
+		
+		sourceWriter.println("return;");
+		sourceWriter.outdent();
+		sourceWriter.println("}");
+		
+		sourceWriter.println("this.proceedToImpl(token);");
+		
+		sourceWriter.outdent();
+		sourceWriter.println("}\n");
+		
+		sourceWriter.println("private void proceedToImpl(final URLToken token){");
+		sourceWriter.indent();
+		
+		sourceWriter.println("this.currentToken = token;");
+		
 		sourceWriter.println("switch (token.getId()){");
 		sourceWriter.indent();
 		
+		int defaultViewIndex = -1;
+		int notFoundViewIndex = -1;
+		
 		for (int i = 0; i< viewPages.size(); i++) {
-			final View view = viewPages.get(i).getView();
+			ViewPage viewPage = viewPages.get(i);
+			final View view = viewPage.getView();
 			logger.log(Type.DEBUG, "Processing view " + view.value() + "...");
+			
+			if (view.defaultView()){
+				defaultViewIndex = i;
+				sourceWriter.println("case \"\":");
+			}
+			if (view.notFoundView()){
+				notFoundViewIndex = i;
+			}
 			
 			sourceWriter.println("case \"" + view.value() + "\": {");
 			sourceWriter.indent();
+			
 			if (!view.publicAccess()){
 				sourceWriter.println("if (userPresenceManager != null) {");
 				sourceWriter.indent();
@@ -206,9 +257,18 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.outdent();
 			sourceWriter.println("}\nbreak;");
 		}
+		
 		sourceWriter.println("default: {");
 		sourceWriter.indent();
-		sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"\", true);");
+		
+		if (notFoundViewPage != null){
+			sourceWriter.println("History.newItem(\""+notFoundViewPage.getView().value()+"\", false);");
+			sourceWriter.println("showPresenter" + notFoundViewIndex + "(new URLToken(\""+notFoundViewPage.getView().value()+"\"));");
+		}
+		else {
+			sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"\", false);");
+			sourceWriter.println("showPresenter" + defaultViewIndex + "(new URLToken(\""+defaultViewPage.getView().value()+"\"));");			
+		}
 		sourceWriter.outdent();
 		sourceWriter.println("}\nbreak;");
 		sourceWriter.outdent();
@@ -230,6 +290,7 @@ public class NavigationManagerGenerator extends Generator {
 			
 			sourceWriter.println("public void onSuccess() {");
 			sourceWriter.indent();
+			
 			sourceWriter.println("GoogleAnalyticsTracker.trackPageview(token.getId());");
 			sourceWriter.println("Presenter<?> presenter = presentersMap.get(\""+view.value()+"\");");
 			sourceWriter.println("if (presenter == null) {");
@@ -245,6 +306,23 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.outdent();
 			sourceWriter.println("}");
 			sourceWriter.println("Widget widget = presenter.getView(token);");
+			
+			if (!URLInterceptor.class.equals(view.urlInterceptor())){
+				String interceptorName = view.urlInterceptor().getName(); 
+				if (interceptorName.equals(viewPage.getType().getQualifiedSourceName())){
+					sourceWriter.println("currentInterceptor = (URLInterceptor) widget;");
+				}
+				else if (interceptorName.equals(view.customPresenter().getName())){
+					sourceWriter.println("currentInterceptor = (URLInterceptor) presenter;");
+				}
+				else {
+					sourceWriter.println("currentInterceptor = new "+view.urlInterceptor().getName()+"();");
+				}
+			}
+			else {
+				sourceWriter.println("currentInterceptor = null;");
+			}
+			
 			if (view.usesViewContainer() && !viewContainers.isEmpty()){
 				Class<?> viewContainer = view.viewContainer();
 				HasViewPages hasViews;

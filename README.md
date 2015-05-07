@@ -10,7 +10,7 @@ GWT Views solves that use case by using Java annotations on your Views (Widgets 
 
 For example:
 
-This is the LoginView, which can be accessed by anybody, and is the default view of the application (the first to be shown):
+This is the `LoginView`, which can be accessed by anybody, and is the default view of the application (the first to be shown):
 
 ```java
 @View(value = "login", publicAccess = true, defaultView = true)
@@ -18,7 +18,7 @@ public class LoginView extends Composite {
 //... your code, you can use UIBinder, procedural UI, whatever you like
 ```
 
-This is the HomeView, which can be accessed by any logged user at the URL `#home`:
+This is the `HomeView`, which can be accessed by any logged user at the URL `#home`:
 
 ```java
 @View("home")
@@ -26,7 +26,7 @@ public class HomeView extends Composite {
 //...
 ```
 
-And this is the AdminView, which can be accessed only by logged users with the "ADMIN" role at the URL `#admin`:
+And this is the `AdminView`, which can be accessed only by logged users with the "ADMIN" role at the URL `#admin`:
 
 ```java
 @View(value = "admin", rolesAllowed = "ADMIN")
@@ -38,7 +38,7 @@ public class AdminView extends Composite {
 
 ### ViewContainer
 
-Views can be defined using just the `@View` annotation. If you need a container with header, sidebars, footers and so on, and want the views to be shown inside that container, you can use a ViewContainer:
+Views can be defined using just the `@View` annotation. If you need a container with header, sidebars, footers and so on, and want the views to be shown inside that container, you can use a `ViewContainer`:
 
 ```java
 @ViewContainer
@@ -50,13 +50,13 @@ public class MainViewConatiner extends Composite implements HasViews {
 	}
 ```
 
-The framework takes care of initiating the container and the views when needed. By default, all Views will be added into the ViewContainer. If you want a View to be shown outside the ViewContainer, you can use:
+The framework takes care of initiating the container and the views when needed. By default, all Views will be added into the `ViewContainer`. If you want a `View` to be shown outside the `ViewContainer`, you can use:
 
 ```java
 @View(value = "other", usesViewContainer = false)
 ```
 	
-You can use more than a ViewContainer as well. In that case, you have to specify which View will Use each ViewContainer:
+You can use more than a `ViewContainer` as well. In that case, you have to specify which `View` will use each `ViewContainer`:
 
 ```java
 @View(value = "one", viewContainer = ViewContainerOne.class)
@@ -66,7 +66,7 @@ You can use more than a ViewContainer as well. In that case, you have to specify
 	
 ### UserPresenceManager
 
-When using authenticated Views, the framework need to know if the user has the rights to see the page he is requesting. To do so, you need to setup your UserPresenceManager:
+When using authenticated Views, the framework need to know if the user has the rights to see the page he is requesting. To do so, you need to setup your `UserPresenceManager`:
 
 ```java
 public class MyApp implements EntryPoint {
@@ -137,7 +137,7 @@ public class LoginView extends Composite {
 //...
 ```
 	
-If you want a specific functionality for your View that demands a custom Presenter, you can setup it too:
+If you want a specific functionality for your View that demands a custom `Presenter`, you can setup it too:
 
 ```java
 @View(value = "custom", customPresenter = MyPresenter.class)
@@ -145,7 +145,7 @@ public class CustomView extends Composite {
 //...
 ```
 	
-Your Presenter only needs to implement one method:
+Your `Presenter` only needs to implement one method:
 
 ```java
 public class MyPresenter implements Presenter<CustomView> {
@@ -159,7 +159,52 @@ public class MyPresenter implements Presenter<CustomView> {
 ### Redirection
 
 When the user tries to access a page he is not allowed to (because be doesn't have the desired credentials, or because the session is expired, and so on), he is redirected to the defaultView by default.
-		
+
+### URLInterceptors
+
+If at some point you want to show a confirmation dialog to the user before he leave some View, you can use an `URLInterceptor`:
+
+```java
+@View(value = "interceptable", urlInterceptor = MyInterceptor.class)
+public class InterceptableView extends Composite {
+//...
+}
+
+public class MyInterceptor implements URLInterceptor {
+	@Override
+	public void onUrlChanged(URLToken current, URLToken destination, URLInterceptorCallback callback) {
+		if (Window.confirm("Do you really want to exit? This page is so nice!")){
+			callback.proceedTo(destination);
+		}
+	}
+}
+```
+
+Note that you can change the final destination, or parameters of it, before proceeding. If you want to stay at the same page, just don't call anything.
+
+You can use the `View` or the custom `Presenter` as `URLInterceptor` as well. In those cases, the same object instance will be used to intercept the URL changes:
+
+```java
+@View(value = "interceptable", urlInterceptor = InterceptableView.class)
+public class InterceptableView extends Composite implements URLInterceptor {
+	@Override
+	public void onUrlChanged(URLToken current, URLToken destination, URLInterceptorCallback callback) {
+		if (Window.confirm("Do you really want to exit? This page is so nice!")){
+			callback.proceedTo(destination);
+		}
+	}
+```
+
+### 404 View
+
+You can setup a View to be used when no other View could be found that matches the URL token. That's the "notFoundView":
+
+```java
+@View(value = "404", notFoundView = true)
+public class NotFoundView extends Composite {
+//...
+```
+
 ## Setup
 
 ### For Maven users (soon):
@@ -192,7 +237,7 @@ Add the gwtviews module to your project.gwt.xml:
 	
 ### Code setup
 
-At your module EntryPoint, start the framework:
+At your module `EntryPoint`, start the framework:
 
 ```java
 public class MyApp implements EntryPoint {

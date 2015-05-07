@@ -71,4 +71,22 @@ public class URLTokenTest {
 		Assert.assertEquals(null, token.getParameter("param5"));
 	}
 	
+	@Test
+	public void testEmpty(){
+		URLToken token = new URLToken("");
+		
+		Assert.assertEquals("", token.getId());
+		Assert.assertEquals("", token.toString());
+		Assert.assertEquals(null, token.getParameter("param1"));
+	}
+	
+	@Test
+	public void testNull(){
+		URLToken token = new URLToken(null);
+		
+		Assert.assertEquals("", token.getId());
+		Assert.assertEquals("", token.toString());
+		Assert.assertEquals(null, token.getParameter("param1"));
+	}
+	
 }

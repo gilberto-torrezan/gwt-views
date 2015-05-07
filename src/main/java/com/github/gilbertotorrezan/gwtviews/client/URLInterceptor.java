@@ -24,41 +24,12 @@
  */
 package com.github.gilbertotorrezan.gwtviews.client;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface View {
-	
-	String value();
-	
-	boolean publicAccess() default false;
-	
-	boolean cacheable() default true;
-	
-	boolean defaultView() default false;
-	
-	boolean notFoundView() default false;
-	
-	boolean usesViewContainer() default true;
-	
-	String[] rolesAllowed() default {};
-	
-	Class<? extends HasViews> viewContainer() default HasViews.class;
-	
-	@SuppressWarnings("rawtypes")
-	Class<? extends Presenter> customPresenter() default Presenter.class;
-	
-	Class<? extends URLInterceptor> urlInterceptor() default URLInterceptor.class;
-	
+public interface URLInterceptor {
+
+	void onUrlChanged(URLToken current, URLToken destination, URLInterceptorCallback callback);
 }
