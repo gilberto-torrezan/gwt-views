@@ -30,7 +30,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.google.gwt.user.client.History;
+
 /**
+ * Defines a View of the application. A View is a Widget associated with a unique URL token that can be shown
+ * at the page. A View is created by a {@link Presenter}.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
@@ -40,25 +45,71 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface View {
 	
+	/**
+	 * The unique URL token that points to this View. 
+	 * 
+	 * @see History#newItem(String) 
+	 */
 	String value();
 	
+	/**
+	 * A public View can be accessed by any user (on-line or off-line), with any role.
+	 * Defaults to <code>false</code>. 
+	 * 
+	 * @see UserPresenceManager#isUserLoggedIn(URLToken, com.google.gwt.user.client.rpc.AsyncCallback)
+	 */
 	boolean publicAccess() default false;
 	
+	/**
+	 * A cacheable View can be cached by the {@link Presenter} to improve performance and save
+	 * the state of the View when the user leaves the page. Defaults to <code>true</code>.
+	 */
 	boolean cacheable() default true;
-	
+
+	/**
+	 * The defaultView is the first View showed by the application, when the {@link NavigationManager} is started.
+	 * There can be only one defaultView. Defaults to <code>false</code>.
+	 */
 	boolean defaultView() default false;
 	
+	/**
+	 * The notFoundView is the View showed when the URL token cannot be matched to any registered View.
+	 * Defaults to <code>false</code>.
+	 */
 	boolean notFoundView() default false;
 	
+	/**
+	 * Defines if this View uses or not a {@link ViewContainer} to be rendered. 
+	 * Defaults to <code>true</code>.
+	 */
 	boolean usesViewContainer() default true;
 	
+	/**
+	 * Defines the roles the user must have to access the View. If the user has any of the defined roles, the access is granted.
+	 * This property has precedence over {@link #publicAccess()}.
+	 * 
+	 * @see UserPresenceManager#isUserInAnyRole(URLToken, String[], com.google.gwt.user.client.rpc.AsyncCallback) 
+	 */
 	String[] rolesAllowed() default {};
 	
+	/**
+	 * Defines a custom {@link ViewContainer} for this View.
+	 * If {@link #usesViewContainer()} is <code>true</code> (default behaviour) and this property is not set, the default
+	 * ViewContainer is used.
+	 * 
+	 * @see ViewContainer#defaultContainer()
+	 */
 	Class<? extends HasViews> viewContainer() default HasViews.class;
 	
+	/**
+	 * Defines a custom {@link Presenter} for this View.
+	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Presenter> customPresenter() default Presenter.class;
 	
+	/**
+	 * Defines a {@link URLInterceptor} for this View.
+	 */
 	Class<? extends URLInterceptor> urlInterceptor() default URLInterceptor.class;
 	
 }

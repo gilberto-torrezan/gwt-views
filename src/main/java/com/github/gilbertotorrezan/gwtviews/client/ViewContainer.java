@@ -31,6 +31,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * A ViewContainer is a layout manager for {@link View}s. The ViewContainer must implement {@link HasViews}.
+ * The Viewcontainer is created by a {@link Presenter}.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
@@ -40,8 +43,22 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ViewContainer {
 	
+	/**
+	 * <p>
+	 * Sets if this ViewContainer is the default container of the application. {@link View}s without a custom ViewContainer
+	 * will use the default one.
+	 * </p>
+	 * <p>
+	 * Defaults to <code>false</code>. If only one ViewContainer is defined at the application, that one is considered the default.
+	 * </p>
+	 * @see View#usesViewContainer()
+	 * @see View#viewContainer()
+	 */
 	boolean defaultContainer() default false;
 	
+	/**
+	 * Sets a custom {@link Presenter} for this ViewContainer.
+	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Presenter> customPresenter() default Presenter.class;
 

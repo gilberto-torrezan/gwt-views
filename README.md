@@ -207,7 +207,7 @@ public class NotFoundView extends Composite {
 
 ## Setup
 
-### For Maven users (soon):
+### For Maven users:
 
 Add the dependency of the GWT Views in your project:
 

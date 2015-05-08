@@ -27,12 +27,27 @@ package com.github.gilbertotorrezan.gwtviews.client;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
+ * <p>
+ * Presenters are responsible to create {@link View}s and {@link ViewContainer}s to be rendered at the page. 
+ * The framework creates Presenters for all Views and ViewContainers without {@link View#customPresenter()}s.
+ * </p>
+ * <p>
+ * Note that the default caching mechanism cannot be used when a custom Presenter is set to a View or ViewContainer.
+ * The developer is responsible to cache the them if needed.
+ * </p>
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
  */
 public interface Presenter<I extends Widget> {
 	
+	/**
+	 * Creates and returns a {@link View}, based on the {@link URLToken}.
+	 * 
+	 *  @param url The current URL state of the application
+	 *  @return The created View to be shown at the page
+	 */
 	I getView(URLToken url);
 
 }

@@ -27,12 +27,20 @@ package com.github.gilbertotorrezan.gwtviews.client;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
+ * {@link ViewContainer}s have to implement this class to receive calls to {@link #showView(URLToken, Widget)}.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
  */
 public interface HasViews {
 	
+	/**
+	 * Called when a {@link View} token is accessed and is ready to be shown.
+	 * 
+	 * @param url The current URL state
+	 * @param view The {@link View} widget to be added into the container
+	 */
 	void showView(URLToken url, Widget view);
 
 }

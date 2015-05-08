@@ -28,6 +28,8 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
+ * Internal class used to dynamically create the implementation of the {@link NavigationManager}.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0

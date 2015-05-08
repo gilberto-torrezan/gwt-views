@@ -27,14 +27,33 @@ package com.github.gilbertotorrezan.gwtviews.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
+ * The UserPresenceManager is called by the {@link NavigationManager} to determine which {@link View}s
+ * the user is alowed to access. All methods are asynchronous to allow a communication with the server if needed.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
+ * @see NavigationManager#setUserPresenceManager(UserPresenceManager)
+ * @see View#publicAccess()
+ * @see View#rolesAllowed()
  */
 public interface UserPresenceManager {
 	
+	/**
+	 * Returns if the user is currently authenticated at the application. Remember to access the callback to inform if the user is on-line or off-line.
+	 * 
+	 * @param url The current URLToken.
+	 * @param callback The callback of the operation. Use the {@link AsyncCallback#onSuccess(Object)} to inform if the user is logged in.
+	 */
 	void isUserLoggedIn(URLToken url, AsyncCallback<Boolean> callback);
 	
+	/**
+	 * Returns if the user is in any of the defined roles. Remember to access the callback to inform if the user is in any of the roles.
+	 * 
+	 * @param url The current URLToken.
+	 * @param roles The roles defined at {@link View#rolesAllowed()}
+	 * @param callback The callback of the operation. Use the {@link AsyncCallback#onSuccess(Object)} to inform if the user is any role.
+	 */
 	void isUserInAnyRole(URLToken url, String[] roles, AsyncCallback<Boolean> callback);
 
 }

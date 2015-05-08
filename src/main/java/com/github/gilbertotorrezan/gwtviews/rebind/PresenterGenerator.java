@@ -39,6 +39,8 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
+ * Class used by the code generator to create the default {@link Presenter}s of Views and ViewContainers.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0

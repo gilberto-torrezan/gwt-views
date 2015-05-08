@@ -33,10 +33,17 @@ import com.google.gwt.place.shared.Place;
 import com.google.gwt.user.client.History;
 
 /**
+ * <p>
+ * A URLToken represents the state of a URL. It parses the parameters in the following form:
+ * <pre>{@code tokenId&param1=value1&param2&param3='complex&value' }</pre>
+ * </p>
+ * <p>
+ * Calling {@link #toString()} will return a valid token with all parameters to be used at {@link History#newItem(String)} or anchors. 
+ * </p> 
  * 
  * @author Gilberto Torrezan Filho
  *
- * @since @since v.1.0.0
+ * @since v.1.0.0
  */
 public class URLToken extends Place {
 
@@ -47,15 +54,33 @@ public class URLToken extends Place {
 		PARSING_ID, PARSING_KEY, PARSING_VALUE, PARSING_COMPLEX_VALUE, PARSED_COMPLEX_VALUE;
 	}
 
+	/**
+	 * Creates a new URLToken using the current state of the application.
+	 * 
+	 * @see History#getToken()
+	 */
 	public URLToken() {
 		setToken(History.getToken());
 	}
 
+	/**
+	 * Creates a new URLToken using the provided token.
+	 * 
+	 * @param completeToken The History token to be parsed, in the form of: <pre>{@code tokenId&param1=value1&param2&param3='complex&value' }</pre>
+	 */
 	public URLToken(String completeToken) {
 		setToken(completeToken);
 	}
 
+	/**
+	 * Sets the current token, causing it to parse the parameters and the tokenId.
+	 * 
+	 * @param completeToken The History token to be parsed, in the form of: <pre>{@code tokenId&param1=value1&param2&param3='complex&value' }</pre>
+	 */
 	public void setToken(String completeToken) {
+		clearParameters();
+		id = "";
+		
 		if (completeToken != null) {
 			StringBuilder builder = new StringBuilder();
 
@@ -142,26 +167,75 @@ public class URLToken extends Place {
 		}
 	}
 
+	/**
+	 * Gets a parameter extracted from the History token.
+	 * For example, if the token is: <pre>{@code tokenId&param1=value1 }</pre>the call to <code>getParameter("param1")</code> will return <code>value1</code>.
+	 * 
+	 * @param name The name of the parameter
+	 * @return The value of the parameter, or <code>null</code> if not found.
+	 * When the token is something like <pre>{@code tokenId&param1&param2 }</pre> with a name without a explicit value, an empty String is returned. 
+	 */
 	public String getParameter(String name) {
 		return parameters.get(name);
 	}
 
+	/**
+	 * Sets a new value to a parameter, or put a new parameter if not existant.
+	 * If the value is <code>null</code>, the parameter is removed (same as calling the {@link #removeParameter(String)} method).
+	 * 
+	 * @param name The name of the parameter
+	 * @param value The value of the parameter
+	 * @return the previous value associated with <code>name</code>, or <code>null</code> if there 
+	 * wasn't an associated value to the name.
+	 */
 	public String setParameter(String name, String value) {
+		if (value == null){
+			return removeParameter(name);
+		}
 		return parameters.put(name, value);
 	}
 
-	public void removeParameter(String name) {
-		parameters.remove(name);
+	/**
+	 * Removes a parameter from the URLToken.
+	 * 
+	 * @param name The name of the parameter to be removed
+	 * @return the previous value associated with <code>name</code>, or <code>null</code> if there 
+	 * wasn't an associated value to the name.
+	 */
+	public String removeParameter(String name) {
+		return parameters.remove(name);
+	}
+	
+	/**
+	 * Clears all the parameters (but not the tokenId).
+	 */
+	public void clearParameters(){
+		parameters.clear();
 	}
 
+	/**
+	 * Gets the tokenId of the URL. The tokenId is the value associated with a {@link View#value()}.
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * Changes the URL of the application to match the state of this URLToken. It has the same effect as calling
+	 * <code>History.newItem(urlToken.toString(), true)</code>.
+	 * 
+	 * @see History#newItem(String, boolean)
+	 */
 	public void go() {
-		History.newItem(toString(), true);
+		History.newItem(this.toString(), true);
 	}
 
+	/**
+	 * Creates a valid History token with the tokenId and all the parameters. Can be used in anchors (with the <code>#</code> sign) or at
+	 * calls to {@link History#newItem(String)}.
+	 * 
+	 * @return The current URL represented by this URLToken, without the <code>#</code> sign
+	 */
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder(id);

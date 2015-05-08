@@ -29,6 +29,8 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Panel;
 
 /**
+ * This class controls all the navigation rules of the application. To start it, call the {@link #start(Panel)} method.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
@@ -39,16 +41,30 @@ public class NavigationManager {
 	
 	private NavigationManager(){}
 	
+	/**
+	 * Starts the framework, rendering the {@link View#defaultView()} to the page.
+	 * 
+	 * @param rootContainer The body widget of the page. Usually <code>RootLayoutPanel.get()</code>.
+	 */
 	public static void start(Panel rootContainer) {
 		manager.setRootContainer(rootContainer);
 		History.addValueChangeHandler(manager);
 		History.fireCurrentHistoryState();
 	}
 
+	/**
+	 * Sets the {@link UserPresenceManager} to control {@link View}s that aren't public.
+	 * 
+	 * @param umanager The UserPresenceManager used by the framework to determine if the user has access to non-public Views.
+	 */
 	public static void setUserPresenceManager(UserPresenceManager umanager) {
 		manager.setUserPresenceManager(umanager);
 	}
 
+	/**
+	 * Clears the {@link View} cache. All Views that are {@link View#cacheable()} are stored in the cache. 
+	 * It is usually a good idea to clear the cache when the current user logs out the application.
+	 */
 	public static void clearCache() {
 		manager.clearCache();
 	}

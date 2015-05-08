@@ -25,12 +25,21 @@
 package com.github.gilbertotorrezan.gwtviews.client;
 
 /**
+ * Used together if the {@link URLInterceptor} to properly send the user to the right {@link View} when
+ * the URL is changed.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
+ * @see URLInterceptor#onUrlChanged(URLToken, URLToken, URLInterceptorCallback)
  */
 public interface URLInterceptorCallback {
 	
+	/**
+	 * Send the user to the destination URL, after the change interception.
+	 * 
+	 * @param destination The fnal destination token
+	 */
 	void proceedTo(URLToken destination);
 
 }

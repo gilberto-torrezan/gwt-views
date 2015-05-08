@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.github.gilbertotorrezan.gwtviews.client.HasViews;
+import com.github.gilbertotorrezan.gwtviews.client.NavigationManager;
 import com.github.gilbertotorrezan.gwtviews.client.Presenter;
 import com.github.gilbertotorrezan.gwtviews.client.URLInterceptor;
 import com.github.gilbertotorrezan.gwtviews.client.View;
@@ -48,6 +49,8 @@ import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 
 /**
+ * Class used by the code generator to create the {@link NavigationManager}.
+ * 
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
