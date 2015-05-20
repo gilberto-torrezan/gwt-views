@@ -56,27 +56,27 @@ public class PresenterGenerator extends Generator {
 
 		final TypeOracle typeOracle = context.getTypeOracle();
 		JClassType mainType = typeOracle.findType(typeName);
+		
+		JParameterizedType parameterized = mainType.getImplementedInterfaces()[0].isParameterized();
+		JClassType viewType = parameterized.getTypeArgs()[0];
+		final String className = viewType.getQualifiedSourceName();
 
-		String name = mainType.getName().substring(mainType.getName().lastIndexOf('.')+1)+"Impl";
+		String name = mainType.getName().substring(mainType.getName().lastIndexOf('.')+1);
+		name = name.substring(0, name.length() - "Presenter".length());
+		name = name + "_" + name + "PresenterImpl";
 
-		PrintWriter writer = context.tryCreate(logger, mainType.getPackage().getName(), name);
+		PrintWriter writer = context.tryCreate(logger, viewType.getPackage().getName(), name);
 		if (writer == null){
-			return mainType.getPackage().getName() + "." + name;
+			return viewType.getPackage().getName() + "." + name;
 		}
 
-		ClassSourceFileComposerFactory factory = new ClassSourceFileComposerFactory(mainType.getPackage().getName(), name);
+		ClassSourceFileComposerFactory factory = new ClassSourceFileComposerFactory(viewType.getPackage().getName(), name);
 		factory.addImplementedInterface(Presenter.class.getName());
 
 		factory.addImport(Presenter.class.getPackage().getName()+".*");
 		factory.addImport("com.google.gwt.user.client.History");
 		factory.addImport("com.google.gwt.user.client.ui.Widget");
 		factory.addImport("java.util.*");
-
-		mainType = mainType.getImplementedInterfaces()[0];
-
-		JParameterizedType parameterized = mainType.isParameterized();
-		JClassType viewType = parameterized.getTypeArgs()[0];
-		final String className = viewType.getQualifiedSourceName();
 
 		SourceWriter sourceWriter = factory.createSourceWriter(context, writer);
 
