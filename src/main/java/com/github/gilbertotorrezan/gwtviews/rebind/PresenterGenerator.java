@@ -75,6 +75,7 @@ public class PresenterGenerator extends Generator {
 
 		factory.addImport(Presenter.class.getPackage().getName()+".*");
 		factory.addImport("com.google.gwt.user.client.History");
+		factory.addImport("com.google.gwt.core.client.GWT");
 		factory.addImport("com.google.gwt.user.client.ui.Widget");
 		factory.addImport("java.util.*");
 
