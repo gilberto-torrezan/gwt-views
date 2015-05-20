@@ -60,7 +60,7 @@ public class URLToken extends Place {
 	 * @see History#getToken()
 	 */
 	public URLToken() {
-		setToken(History.getToken());
+		this(History.getToken());
 	}
 
 	/**
@@ -178,6 +178,77 @@ public class URLToken extends Place {
 	public String getParameter(String name) {
 		return parameters.get(name);
 	}
+	
+	/**
+	 * Gets a parameter extracted from the History token.
+	 * For example, if the token is: <pre>{@code tokenId&param1=value1 }</pre>the call to <code>getParameter("param1", "def")</code> will return <code>value1</code>.
+	 * 
+	 * @param name The name of the parameter
+	 * @param defaultValue The value to be returned when the parameter value is <code>null</code>
+	 * @return The value of the parameter, or <code>defaultValue</code> if not found.
+	 * When the token is something like <pre>{@code tokenId&param1&param2 }</pre> with a name without a explicit value, an empty String is returned. 
+	 */
+	public String getParameter(String name, String defaultValue) {
+		String value = parameters.get(name);
+		if (value == null){
+			value = defaultValue;
+		}
+		return value;
+	}
+	
+	/**
+	 * Gets an integer parameter extracted from the History token.
+	 * For example, if the token is: <pre>{@code tokenId&param1=1 }</pre>the call to <code>getParameterAsInt("param1", 0)</code> will return <code>1</code>.
+	 * 
+	 * @param name The name of the parameter
+	 * @param defaultValue The value to be returned when the parameter is <code>null</code> or not parseable to int
+	 * @return The integer value of the parameter, or <code>defaultValue</code> if not parseable.
+	 * When the token is something like <pre>{@code tokenId&param1&param2 }</pre> with a name without a explicit value, the default value is returned. 
+	 */
+	public int getParameterAsInt(String name, int defaultValue){
+		String value = parameters.get(name);
+		if (value == null || value.isEmpty()){
+			return defaultValue;
+		}
+		try {
+			return Integer.parseInt(value);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+	
+	/**
+	 * Gets a boolean parameter extracted from the History token.
+	 * For example, if the token is: <pre>{@code tokenId&param1=true }</pre>the call to <code>getParameterAsBoolean("param1")</code> will return <code>true</code>.
+	 * 
+	 * @param name The name of the parameter
+	 * @return <code>true</code> if the value is equals ignoring case to the String "true", <code>false</code> otherwise 
+	 */
+	public boolean getParameterAsBoolean(String name){
+		String value = parameters.get(name);
+		return Boolean.parseBoolean(value);
+	}
+	
+	/**
+	 * Gets a double parameter extracted from the History token.
+	 * For example, if the token is: <pre>{@code tokenId&param1=0.1 }</pre>the call to <code>getParameterAsBoolean("param1", 0)</code> will return <code>0.1</code>.
+	 * 
+	 * @param name The name of the parameter
+	 * @param defaultValue The value to be returned when the parameter is <code>null</code> or not parseable to double
+	 * @return The boolean value of the parameter, or <code>defaultValue</code> if not parseable.
+	 * When the token is something like <pre>{@code tokenId&param1&param2 }</pre> with a name without a explicit value, the default value is returned. 
+	 */
+	public double getParameterAsDouble(String name, double defaultValue){
+		String value = parameters.get(name);
+		if (value == null || value.isEmpty()){
+			return defaultValue;
+		}
+		try {
+			return Double.parseDouble(value);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
 
 	/**
 	 * Sets a new value to a parameter, or put a new parameter if not existant.
@@ -211,6 +282,16 @@ public class URLToken extends Place {
 	 */
 	public void clearParameters(){
 		parameters.clear();
+	}
+	
+	/**
+	 * Verifies if a parameter with the defined name is present on the URL.
+	 * 
+	 * @param name The name of the parameter
+	 * @return <code>true</code> if the parameter is present, even with an empty value, <code>false</code> otherwise
+	 */
+	public boolean containsParameter(String name){
+		return parameters.containsKey(name);
 	}
 
 	/**

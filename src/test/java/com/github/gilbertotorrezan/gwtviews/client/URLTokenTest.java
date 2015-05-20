@@ -89,4 +89,29 @@ public class URLTokenTest {
 		Assert.assertEquals(null, token.getParameter("param1"));
 	}
 	
+	@Test
+	public void testNumbers(){
+		URLToken token = new URLToken("withNumbers&param1=1&param2&param3='3'&param4=notANumber");
+		
+		Assert.assertEquals("withNumbers", token.getId());
+		Assert.assertEquals(1, token.getParameterAsInt("param1", 0));
+		Assert.assertEquals(1.0, token.getParameterAsDouble("param1", 0), 0);
+		Assert.assertEquals(42, token.getParameterAsInt("param2", 42));
+		Assert.assertEquals(3, token.getParameterAsInt("param3", 0));
+		Assert.assertEquals(4, token.getParameterAsInt("param4", 4));
+		Assert.assertEquals(5, token.getParameterAsInt("param5", 5));
+	}
+	
+	@Test
+	public void testBoolean(){
+		URLToken token = new URLToken("withBooleans&param1=true&param2&param3='true'&param4=notABoolean");
+		
+		Assert.assertEquals("withBooleans", token.getId());
+		Assert.assertEquals(true, token.getParameterAsBoolean("param1"));
+		Assert.assertEquals(false, token.getParameterAsBoolean("param2"));
+		Assert.assertEquals(true, token.getParameterAsBoolean("param3"));
+		Assert.assertEquals(false, token.getParameterAsBoolean("param4"));
+		Assert.assertEquals(false, token.getParameterAsBoolean("param5"));
+	}
+	
 }
