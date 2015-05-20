@@ -61,5 +61,16 @@ public @interface ViewContainer {
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Presenter> customPresenter() default Presenter.class;
+	
+	/**
+	 * Defines a injector to be used to instantiate this ViewContainer. Useful when using dependency injection frameworks such as GIN.
+	 */
+	Class<?> injector() default void.class;
+	
+	/**
+	 * Defines the method to be called on the {@link #injector()} to instantiate this ViewContainer. You only have to use this property when 
+	 * there's more than one method that returns this ViewContainer type.
+	 */
+	String injectorMethod() default "";
 
 }

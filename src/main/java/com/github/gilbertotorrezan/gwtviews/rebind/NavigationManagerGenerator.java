@@ -57,6 +57,7 @@ import com.google.gwt.user.rebind.SourceWriter;
  */
 public class NavigationManagerGenerator extends Generator {
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public String generate(TreeLogger logger, GeneratorContext context, String typeName) throws UnableToCompleteException {
 		
@@ -83,7 +84,8 @@ public class NavigationManagerGenerator extends Generator {
 		
 		SourceWriter sourceWriter = factory.createSourceWriter(context, writer);
 		
-		sourceWriter.println("//AUTO GENERATED FILE BY GWT-VIEWS. DO NOT EDIT!\n");
+		sourceWriter.println("//AUTO GENERATED FILE BY GWT-VIEWS AT " + getClass().getName() + ". DO NOT EDIT!\n");
+		
 		sourceWriter.println("private Panel rootContainer;");
 		sourceWriter.println("private UserPresenceManager userPresenceManager;");
 		sourceWriter.println("private final Map<String, Presenter<?>> presentersMap = new HashMap<>();");
@@ -98,7 +100,7 @@ public class NavigationManagerGenerator extends Generator {
 		
 		ViewPage defaultViewPage = null;
 		ViewPage notFoundViewPage = null;
-		HasViewPages defaultViewContainer = null;
+		HasViewPages defaultViewContainerPage = null;
 		
 		JClassType containerType = typeOracle.findType(HasViews.class.getName());
 		
@@ -132,7 +134,7 @@ public class NavigationManagerGenerator extends Generator {
 				HasViewPages hasViews = new HasViewPages(container, type);
 				viewContainers.put(type.getName(), hasViews);
 				if (container.defaultContainer()){
-					defaultViewContainer = hasViews;
+					defaultViewContainerPage = hasViews;
 				}
 			}
 		}
@@ -142,13 +144,13 @@ public class NavigationManagerGenerator extends Generator {
 			throw new UnableToCompleteException();
 		}
 		
-		if (defaultViewContainer == null && viewContainers.size() > 1){
+		if (defaultViewContainerPage == null && viewContainers.size() > 1){
 			logger.log(Type.ERROR, "There are more than one "+ViewContainer.class.getSimpleName()+" but no one is the default!");
 			throw new UnableToCompleteException();
 		}
 		
-		if (defaultViewContainer == null && !viewContainers.isEmpty()){
-			defaultViewContainer = viewContainers.values().iterator().next();
+		if (defaultViewContainerPage == null && !viewContainers.isEmpty()){
+			defaultViewContainerPage = viewContainers.values().iterator().next();
 		}
 		
 		sourceWriter.println("public void onValueChange(ValueChangeEvent<String> event){");
@@ -298,8 +300,10 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.println("Presenter<?> presenter = presentersMap.get(\""+view.value()+"\");");
 			sourceWriter.println("if (presenter == null) {");
 			sourceWriter.indent();
-			if (!Presenter.class.equals(view.customPresenter())){
-				sourceWriter.println("presenter = new "+view.customPresenter().getName()+"();");
+			
+			Class<? extends Presenter> customPresenter = view.customPresenter();
+			if (!Presenter.class.equals(customPresenter)){
+				sourceWriter.println("presenter = new "+customPresenter.getName()+"();");
 			}
 			else {
 				viewsInNeedOfPresenters.add(viewPage);
@@ -310,27 +314,29 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.println("}");
 			sourceWriter.println("Widget widget = presenter.getView(token);");
 			
-			if (!URLInterceptor.class.equals(view.urlInterceptor())){
-				String interceptorName = view.urlInterceptor().getName(); 
+			Class<? extends URLInterceptor> urlInterceptor = view.urlInterceptor();
+			if (!URLInterceptor.class.equals(urlInterceptor)){
+				String interceptorName = urlInterceptor.getName(); 
 				if (interceptorName.equals(viewPage.getType().getQualifiedSourceName())){
 					sourceWriter.println("currentInterceptor = (URLInterceptor) widget;");
 				}
-				else if (interceptorName.equals(view.customPresenter().getName())){
+				else if (interceptorName.equals(customPresenter.getName())){
 					sourceWriter.println("currentInterceptor = (URLInterceptor) presenter;");
 				}
 				else {
-					sourceWriter.println("currentInterceptor = new "+view.urlInterceptor().getName()+"();");
+					sourceWriter.println("currentInterceptor = new "+urlInterceptor.getName()+"();");
 				}
 			}
 			else {
 				sourceWriter.println("currentInterceptor = null;");
 			}
 			
-			if (view.usesViewContainer() && !viewContainers.isEmpty()){
+			boolean usesViewContainer = view.usesViewContainer();
+			if (usesViewContainer && !viewContainers.isEmpty()){
 				Class<?> viewContainer = view.viewContainer();
 				HasViewPages hasViews;
 				if (HasViews.class.equals(viewContainer)){
-					hasViews = defaultViewContainer;
+					hasViews = defaultViewContainerPage;
 				}
 				else{
 					hasViews = viewContainers.get(viewContainer.getName());

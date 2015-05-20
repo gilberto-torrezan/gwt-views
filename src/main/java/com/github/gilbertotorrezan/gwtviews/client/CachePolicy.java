@@ -24,23 +24,34 @@
  */
 package com.github.gilbertotorrezan.gwtviews.client;
 
-
 /**
- * Used together if the {@link URLInterceptor} to properly send the user to the right {@link View} when
- * the URL is changed.
+ * Enum that describes how a {@link View} should be cached in its {@link Presenter}. Note that if a
+ * {@link View#customPresenter()} is used, these properties have no effect - the developer must take
+ * care of the caching himself.
  * 
  * @author Gilberto Torrezan Filho
  *
- * @since v.1.0.0
- * @see URLInterceptor#onUrlChanged(URLToken, URLToken, URLInterceptorCallback)
+ * @since v.1.1.0
  */
-public interface URLInterceptorCallback {
+public enum CachePolicy {
 	
 	/**
-	 * Send the user to the destination URL, after the change interception.
-	 * 
-	 * @param destination The fnal destination token
+	 * When using the NEVER cache policy, a new instance of the View is created everytime is needed. No
+	 * caching is performed. 
 	 */
-	void proceedTo(URLToken destination);
+	NEVER,
+	
+	/**
+	 * When using the SAME_URL cache policy, a new instance of the View is created only when the URL (incluing its
+	 * parameters) is changed. If a View URL is always the same, the same View instance will be used. This is the default
+	 * behavior. 
+	 * 
+	 */
+	SAME_URL,
+	
+	/**
+	 * When using the ALWAYS cache policy, the same instance of the View is used at all times, regardless of changes in URL parameters.
+	 */
+	ALWAYS;
 
 }

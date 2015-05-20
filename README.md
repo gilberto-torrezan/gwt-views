@@ -125,18 +125,46 @@ You need to include the `ga.js` file in your host page to be able to track event
 <body onload="lazyLoadScripts();">
 ```
 
-### Presenters, code splitting and caching
+### Caching
 
-The framework automatically creates presenters for your Views, which handle all the code splitting stuff for you. You don't need to worry about large code downloads: the framework uses the code splitting functionality of GWT for each View for you.
+The Views can be cached by the Presenters to to improve performance and save the state of the View when the user leaves the page. By default, the Views are cached when there are no changes in the URL that points to the View, like URL parameters. In other words, if your user goes to "#1", and then to the View "#2", and goes back to "#1" (by either pressing the back button of the browser, or typing directly at the URL bar, or clicking on an anchor), the "#1" View will be at the same state as when he left it. But if the user access "#1&something", a new View instance is created.
 
-The Views are cacheable by default. That means if you users goes to "#1", and then to the View "#2", and goes back to "#1" (by either pressing the back button of the browser, or typing directly at the URL bar, or clicking on an anchor), the "#1" View will be at the same state as when he left it. That behaviour, can be disabled if you wish (makes sense at login pages, for example):
+The cache behavior is managed by the `cache` property (the default behavior is CachePolicy.SAME_URL):
 
 ```java
-@View(value = "login", publicAccess = true, defaultView = true, cacheable = false)
+@View(value = "login", publicAccess = true, defaultView = true, cache = CachePolicy.NEVER) //disables the caching
 public class LoginView extends Composite {
 //...
 ```
-	
+
+```java
+@View(value = "cached", cache = CachePolicy.ALWAYS) //always cache, even with different URL parameters
+public class CachedView extends Composite {
+//...
+```
+
+### Dependency injection
+
+If you use a dependency injection framework such as [GIN](https://code.google.com/p/google-gin/), you can setup your Views and ViewContainers to be injected. To do so, just use the `injector` property:
+
+```java
+@View(value = "injected", injector = MyInjector.class)
+public class InjectedView extends Composite {
+//...
+```
+
+If your injector has more than one method that returns the same type of your View, you can use the `injectorMethod` to define which method should be called:
+
+```java
+@View(value = "injected", injector = MyInjector.class, injectorMethod = "getInjectedView")
+public class InjectedView extends Composite {
+//...
+```
+
+The GWT Views framework doesn't have any dependency to any framework other than GWT itself, so if you want to add a dependency injection framework to your project, you are free to choose whatever you want.
+
+### Custom Presenters
+
 If you want a specific functionality for your View that demands a custom `Presenter`, you can setup it too:
 
 ```java
@@ -152,9 +180,15 @@ public class MyPresenter implements Presenter<CustomView> {
 	
 	@Override
 	public CustomView getView(URLToken url){
-		//creates and returns your CustomView. You have to handle the caching if you want, but the code splitting is still garanteed by the framework.
+		//creates and returns your CustomView. You have to handle the caching and the injection if needed, but the code splitting is still garanteed by the framework.
 	}
 ```
+
+Please note that if you use a custom Presenter, you are responsible for the caching and the injection of your created View. The `cache` and `injector` properties have no effect.
+
+### Code splitting
+
+The framework automatically creates the Presenters in a way that takes care of the code-splitting for you. You don't need to worry about it, even if you use a custom Presenter. Each Presenter and the View it creates are put on the same code fragment, so each page can be handled separately from each other. You can control the number of code fragments your application produces by tweaking the `-XfragmentCount` property of the GWT compiler. Take a look at this [link](http://www.gwtproject.org/articles/fragment_merging.html) for more info about fragment merging.
 
 ### Redirection
 
@@ -215,13 +249,13 @@ Add the dependency of the GWT Views in your project:
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<scope>provided</scope>
 </dependency>
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<classifier>sources</classifier>
 	<scope>provided</scope>
 </dependency>

@@ -62,9 +62,10 @@ public @interface View {
 	
 	/**
 	 * A cacheable View can be cached by the {@link Presenter} to improve performance and save
-	 * the state of the View when the user leaves the page. Defaults to <code>true</code>.
+	 * the state of the View when the user leaves the page. Defaults to <code>CachePolicy.SAME_URL</code>.
+	 * Note that this property has no effect when a {@link #customPresenter()} is defined.
 	 */
-	boolean cacheable() default true;
+	CachePolicy cache() default CachePolicy.SAME_URL;
 
 	/**
 	 * The defaultView is the first View showed by the application, when the {@link NavigationManager} is started.
@@ -111,5 +112,16 @@ public @interface View {
 	 * Defines a {@link URLInterceptor} for this View.
 	 */
 	Class<? extends URLInterceptor> urlInterceptor() default URLInterceptor.class;
+	
+	/**
+	 * Defines a injector to be used to instantiate this View. Useful when using dependency injection frameworks such as GIN.
+	 */
+	Class<?> injector() default void.class;
+	
+	/**
+	 * Defines the method to be called on the {@link #injector()} to instantiate this View. You only have to use this property when 
+	 * there's more than one method that returns this View type.
+	 */
+	String injectorMethod() default "";
 	
 }
