@@ -42,7 +42,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface UserPresenceManager {
 	
 	/**
-	 * Returns if the user is logged in and in any of the defined roles. Remember to access the callback to inform if the user is in any of the roles by calling {@link AsyncCallback#onSuccess(Boolean)}.
+	 * Returns if the user is logged in and in any of the defined roles. Remember to access the callback to inform if the user is in 
+	 * any of the roles by calling {@link AsyncCallback#onSuccess(Object)}.
 	 * 
 	 * @param url The current URLToken.
 	 * @param roles The roles defined at {@link View#rolesAllowed()} or empty array (never <code>null</code>).

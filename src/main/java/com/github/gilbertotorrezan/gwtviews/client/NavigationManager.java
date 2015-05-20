@@ -62,7 +62,7 @@ public class NavigationManager {
 	}
 
 	/**
-	 * Clears the {@link View} cache. All Views that are {@link View#cacheable()} are stored in the cache. 
+	 * Clears the {@link Presenter} cache. All Presenters are stored in the cache (which, in turn, can cache {@link View}s). 
 	 * It is usually a good idea to clear the cache when the current user logs out the application.
 	 */
 	public static void clearCache() {
