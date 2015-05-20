@@ -303,7 +303,7 @@ public class NavigationManagerGenerator extends Generator {
 			
 			Class<? extends Presenter> customPresenter = view.customPresenter();
 			if (!Presenter.class.equals(customPresenter)){
-				sourceWriter.println("presenter = new "+customPresenter.getName()+"();");
+				sourceWriter.println("presenter = GWT.create(" + customPresenter.getName() + ".class);");
 			}
 			else {
 				viewsInNeedOfPresenters.add(viewPage);
@@ -324,7 +324,7 @@ public class NavigationManagerGenerator extends Generator {
 					sourceWriter.println("currentInterceptor = (URLInterceptor) presenter;");
 				}
 				else {
-					sourceWriter.println("currentInterceptor = new "+urlInterceptor.getName()+"();");
+					sourceWriter.println("currentInterceptor = GWT.create("+urlInterceptor.getName()+".class);");
 				}
 			}
 			else {
@@ -351,7 +351,7 @@ public class NavigationManagerGenerator extends Generator {
 				sourceWriter.println("if (containerPresenter == null) {");
 				sourceWriter.indent();
 				if (!Presenter.class.equals(hasViews.getContainer().customPresenter())){
-					sourceWriter.println("containerPresenter = new "+hasViews.getContainer().customPresenter().getName()+"();");
+					sourceWriter.println("containerPresenter = GWT.create("+hasViews.getContainer().customPresenter().getName()+".class);");
 				}
 				else {
 					containersInNeedOfPresenters.add(hasViews);

@@ -185,7 +185,7 @@ public class PresenterGenerator extends Generator {
 			}
 			if (methodName == null){
 				logger.log(Type.INFO, "The injector " + injector.getName() + " has no methods with " + className 
-								+ " as return type. The View will not be injected - it will be created with the \"new\" operator.");
+								+ " as return type. The View will not be injected.");
 				return null;
 			}
 			return methodName;
@@ -197,7 +197,7 @@ public class PresenterGenerator extends Generator {
 			sourceWriter.println("view = (" + className + ") injector." + injectorMethod + "();");
 		}
 		else {
-			sourceWriter.println("view = new " + className + "();");				
+			sourceWriter.println("view = GWT.create( " + className + ".class);");				
 		}
 	}
 
