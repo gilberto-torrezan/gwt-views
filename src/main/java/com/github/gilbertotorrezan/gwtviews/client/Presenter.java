@@ -32,8 +32,8 @@ import com.google.gwt.user.client.ui.Widget;
  * The framework creates Presenters for all Views and ViewContainers without {@link View#customPresenter()}s.
  * </p>
  * <p>
- * Note that the default caching mechanism cannot be used when a custom Presenter is set to a View or ViewContainer.
- * The developer is responsible to cache the them if needed.
+ * Note that the default caching and injection mechanisms cannot be used when a custom Presenter is set to a View or ViewContainer.
+ * The developer is responsible to cache and inject them if needed.
  * </p>
  * 
  * @author Gilberto Torrezan Filho

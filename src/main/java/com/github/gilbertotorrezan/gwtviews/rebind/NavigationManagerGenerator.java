@@ -225,7 +225,7 @@ public class NavigationManagerGenerator extends Generator {
 					sourceWriter.println("userPresenceManager.isUserInAnyRole(token, "+params.toString()+", new AsyncCallback<Boolean>(){");
 				}
 				else {
-					sourceWriter.println("userPresenceManager.isUserLoggedIn(token, new AsyncCallback<Boolean>(){");
+					sourceWriter.println("userPresenceManager.isUserInAnyRole(token, new String[0], new AsyncCallback<Boolean>(){");
 				}
 				sourceWriter.indent();
 				sourceWriter.println("@Override");

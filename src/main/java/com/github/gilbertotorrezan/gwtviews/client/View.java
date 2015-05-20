@@ -56,7 +56,7 @@ public @interface View {
 	 * A public View can be accessed by any user (on-line or off-line), with any role.
 	 * Defaults to <code>false</code>. 
 	 * 
-	 * @see UserPresenceManager#isUserLoggedIn(URLToken, com.google.gwt.user.client.rpc.AsyncCallback)
+	 * @see UserPresenceManager#isUserInAnyRole(URLToken, String[], com.google.gwt.user.client.rpc.AsyncCallback)
 	 */
 	boolean publicAccess() default false;
 	
