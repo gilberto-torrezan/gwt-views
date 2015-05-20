@@ -292,6 +292,13 @@ public class MyApp implements EntryPoint {
 	}
 }
 ```
+
+When the user logs out the application, it is a good idea to clear the cache of Presenters at your NavigationManager, to ensure a new session (with a possible new user) will use renewed Views, and not cached ones from previous sessions. To do so, just call the `clearCache` method:
+
+```java
+// when the user clicks on a "logout" button
+NavigationManager.clearCache();
+```
 	
 ## License
 
