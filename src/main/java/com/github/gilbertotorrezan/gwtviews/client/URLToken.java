@@ -396,7 +396,6 @@ public class URLToken extends Place implements Cloneable {
 	/**
 	 * Clones this URLToken, using the {@link #URLToken(URLToken)} constructor.
 	 */
-	@Override
 	public URLToken clone() {
 		URLToken clone = new URLToken(this);
 		return clone;
