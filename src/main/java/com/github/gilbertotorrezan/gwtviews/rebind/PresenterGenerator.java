@@ -27,6 +27,7 @@ package com.github.gilbertotorrezan.gwtviews.rebind;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 
+import com.github.gilbertotorrezan.gwtviews.client.AutoPresenter;
 import com.github.gilbertotorrezan.gwtviews.client.CachePolicy;
 import com.github.gilbertotorrezan.gwtviews.client.Presenter;
 import com.github.gilbertotorrezan.gwtviews.client.View;
@@ -48,6 +49,7 @@ import com.google.gwt.user.rebind.SourceWriter;
  * @author Gilberto Torrezan Filho
  *
  * @since v.1.0.0
+ * @see AutoPresenter
  */
 public class PresenterGenerator extends Generator {
 
@@ -71,7 +73,7 @@ public class PresenterGenerator extends Generator {
 		}
 
 		ClassSourceFileComposerFactory factory = new ClassSourceFileComposerFactory(viewType.getPackage().getName(), name);
-		factory.addImplementedInterface(Presenter.class.getName());
+		factory.addImplementedInterface(AutoPresenter.class.getName());
 
 		factory.addImport(Presenter.class.getPackage().getName()+".*");
 		factory.addImport("com.google.gwt.user.client.History");

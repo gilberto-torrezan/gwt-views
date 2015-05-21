@@ -403,13 +403,13 @@ public class NavigationManagerGenerator extends Generator {
 		
 		sourceWriter.println("//View presenters");
 		for (ViewPage viewPage : viewsInNeedOfPresenters) {
-			sourceWriter.println("public static interface "+viewPage.getType().getName()+"Presenter extends Presenter<"+
+			sourceWriter.println("public static interface "+viewPage.getType().getName()+"Presenter extends AutoPresenter<"+
 					viewPage.getType().getQualifiedSourceName()+">{}");
 		}
 		if (!containersInNeedOfPresenters.isEmpty()){
 			sourceWriter.println("\n//ViewContainer presenters");
 			for (HasViewPages container : containersInNeedOfPresenters) {
-				sourceWriter.println("public static interface "+container.getType().getName()+"Presenter extends Presenter<"+
+				sourceWriter.println("public static interface "+container.getType().getName()+"Presenter extends AutoPresenter<"+
 						container.getType().getQualifiedSourceName()+">{}");			
 			}
 		}

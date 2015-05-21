@@ -11,7 +11,7 @@
 	
 	<generate-with class="com.github.gilbertotorrezan.gwtviews.rebind.PresenterGenerator">
         <when-type-assignable
-            class="com.github.gilbertotorrezan.gwtviews.client.Presenter" />
+            class="com.github.gilbertotorrezan.gwtviews.client.AutoPresenter" />
     </generate-with>
 
 	<!-- Specify the paths for translatable code -->
