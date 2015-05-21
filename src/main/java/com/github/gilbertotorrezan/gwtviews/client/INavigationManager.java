@@ -41,5 +41,7 @@ public interface INavigationManager extends ValueChangeHandler<String> {
 	void setUserPresenceManager(UserPresenceManager manager);
 	
 	void clearCache();
+	
+	void clearCache(String tokenId);
 
 }

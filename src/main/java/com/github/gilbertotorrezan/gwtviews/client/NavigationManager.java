@@ -62,11 +62,18 @@ public class NavigationManager {
 	}
 
 	/**
-	 * Clears the {@link Presenter} cache. All Presenters are stored in the cache (which, in turn, can cache {@link View}s). 
+	 * Clears all the {@link Presenter} cache. All Presenters are stored in the cache (which, in turn, can cache {@link View}s). 
 	 * It is usually a good idea to clear the cache when the current user logs out the application.
 	 */
 	public static void clearCache() {
 		manager.clearCache();
 	}
 
+	/**
+	 * Clears the {@link Presenter} associated with the tokenId from the cache. If the same tokenId is called again, a new Presenter
+	 * will be created to handle the request.
+	 */
+	public static void clearCache(String tokenId) {
+		manager.clearCache(tokenId);
+	}
 }

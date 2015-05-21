@@ -107,11 +107,11 @@ public class NavigationManagerGenerator extends Generator {
 		JClassType[] types = typeOracle.getTypes();
 		for (JClassType type : types) {
 			if (type.isAnnotationPresent(View.class)){
-				if (!type.isDefaultInstantiable()){
+				View view = type.getAnnotation(View.class);
+				if (shouldForceEmptyConstructor(view) && !type.isDefaultInstantiable()){
 					logger.log(Type.WARN, type.getName()+" must have an empty constructor to be a valid "+View.class.getSimpleName()+".");
 					continue;
 				}
-				View view = type.getAnnotation(View.class);
 				ViewPage page = new ViewPage(view, type);
 				viewPages.add(page);
 				if (view.defaultView()){
@@ -126,11 +126,11 @@ public class NavigationManagerGenerator extends Generator {
 					logger.log(Type.WARN, type.getName()+" must implement "+containerType.getName()+" to be a valid "+ViewContainer.class.getSimpleName()+".");
 					continue;
 				}
-				if (!type.isDefaultInstantiable()){
+				ViewContainer container = type.getAnnotation(ViewContainer.class);
+				if (shouldForceEmptyConstructor(container) && !type.isDefaultInstantiable()){
 					logger.log(Type.WARN, type.getName()+" must have an empty constructor to be a valid "+ViewContainer.class.getSimpleName()+".");
 					continue;
 				}
-				ViewContainer container = type.getAnnotation(ViewContainer.class);
 				HasViewPages hasViews = new HasViewPages(container, type);
 				viewContainers.put(type.getName(), hasViews);
 				if (container.defaultContainer()){
@@ -347,7 +347,7 @@ public class NavigationManagerGenerator extends Generator {
 							ViewContainer.class.getSimpleName()+" for "+View.class.getSimpleName()+" "+viewPage.getType().getQualifiedSourceName()+".");
 					throw new UnableToCompleteException();
 				}
-				sourceWriter.println("Presenter<?> containerPresenter = presentersMap.get(\"@"+hasViews.getType().getName()+"\");");
+				sourceWriter.println("Presenter<?> containerPresenter = presentersMap.get(\""+hasViews.getType().getQualifiedSourceName()+"\");");
 				sourceWriter.println("if (containerPresenter == null) {");
 				sourceWriter.indent();
 				if (!Presenter.class.equals(hasViews.getContainer().customPresenter())){
@@ -357,7 +357,7 @@ public class NavigationManagerGenerator extends Generator {
 					containersInNeedOfPresenters.add(hasViews);
 					sourceWriter.println("containerPresenter = (Presenter<?>) GWT.create("+hasViews.getType().getName()+"Presenter.class);");				
 				}
-				sourceWriter.println("presentersMap.put(\"@"+hasViews.getType().getName()+"\", containerPresenter);");
+				sourceWriter.println("presentersMap.put(\""+hasViews.getType().getQualifiedSourceName()+"\", containerPresenter);");
 				sourceWriter.outdent();
 				sourceWriter.println("}");
 				sourceWriter.println("Widget container = containerPresenter.getView(token);");
@@ -386,6 +386,12 @@ public class NavigationManagerGenerator extends Generator {
 		sourceWriter.println("@Override\npublic void clearCache() {");
 		sourceWriter.indent();
 		sourceWriter.println("presentersMap.clear();");
+		sourceWriter.outdent();
+		sourceWriter.println("}\n");
+		
+		sourceWriter.println("@Override\npublic void clearCache(String tokenId) {");
+		sourceWriter.indent();
+		sourceWriter.println("presentersMap.remove(tokenId);");
 		sourceWriter.outdent();
 		sourceWriter.println("}\n");
 		
@@ -420,6 +426,14 @@ public class NavigationManagerGenerator extends Generator {
 		context.commit(logger, writer);
 		
 		return factory.getCreatedClassName();
+	}
+	
+	private boolean shouldForceEmptyConstructor(View view){
+		return Presenter.class.equals(view.customPresenter()) && void.class.equals(view.injector());
+	}
+	
+	private boolean shouldForceEmptyConstructor(ViewContainer vc){
+		return Presenter.class.equals(vc.customPresenter()) && void.class.equals(vc.injector());
 	}
 	
 	private class ViewPage {
