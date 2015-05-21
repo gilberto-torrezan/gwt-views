@@ -45,7 +45,7 @@ import com.google.gwt.user.client.History;
  *
  * @since v.1.0.0
  */
-public class URLToken extends Place {
+public class URLToken extends Place implements Cloneable {
 
 	private String id = "";
 	private Map<String, String> parameters = new LinkedHashMap<>();
@@ -70,6 +70,16 @@ public class URLToken extends Place {
 	 */
 	public URLToken(String completeToken) {
 		setToken(completeToken);
+	}
+	
+	/**
+	 * Clones a URLToken, copying the id and all parameters.
+	 * 
+	 * @see #clone()
+	 */
+	public URLToken(URLToken source) {
+		this.id = source.id;
+		this.parameters.putAll(source.parameters);
 	}
 
 	/**
@@ -300,6 +310,32 @@ public class URLToken extends Place {
 	public String getId() {
 		return id;
 	}
+	
+	/**
+	 * Sets the tokenId of the URL. The tokenId is the value associated with a {@link View#value()}.
+	 */
+	public void setId(String id) {
+		if (id == null){
+			id = "";
+		}
+		this.id = id;
+	}
+	
+	/**
+	 * Same as calling {@link #setId(String)}, but returning this instance for method chaining.
+	 */
+	public URLToken withId(String id) {
+		setId(id);
+		return this;
+	}
+	
+	/**
+	 * Same as calling {@link #setParameter(String, String)}, but returning this instance for method chaining.
+	 */
+	public URLToken withParameter(String name, String value) {
+		setParameter(name, value);
+		return this;
+	}
 
 	/**
 	 * Changes the URL of the application to match the state of this URLToken. It has the same effect as calling
@@ -346,12 +382,24 @@ public class URLToken extends Place {
 		if (obj instanceof Place) {
 			return this.toString().equals(obj.toString());
 		}
+		if (obj instanceof String){
+			return this.toString().equals(obj);
+		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
 		return toString().hashCode();
+	}
+	
+	/**
+	 * Clones this URLToken, using the {@link #URLToken(URLToken)} constructor.
+	 */
+	@Override
+	public URLToken clone() {
+		URLToken clone = new URLToken(this);
+		return clone;
 	}
 
 }

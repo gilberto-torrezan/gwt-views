@@ -82,7 +82,7 @@ public class URLTokenTest {
 	
 	@Test
 	public void testNull(){
-		URLToken token = new URLToken(null);
+		URLToken token = new URLToken((String) null);
 		
 		Assert.assertEquals("", token.getId());
 		Assert.assertEquals("", token.toString());
