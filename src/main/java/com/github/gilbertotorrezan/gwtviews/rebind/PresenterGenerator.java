@@ -25,7 +25,6 @@
 package com.github.gilbertotorrezan.gwtviews.rebind;
 
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 
 import com.github.gilbertotorrezan.gwtviews.client.AutoPresenter;
 import com.github.gilbertotorrezan.gwtviews.client.CachePolicy;
@@ -38,7 +37,10 @@ import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.TreeLogger.Type;
 import com.google.gwt.core.ext.UnableToCompleteException;
 import com.google.gwt.core.ext.typeinfo.JClassType;
+import com.google.gwt.core.ext.typeinfo.JMethod;
 import com.google.gwt.core.ext.typeinfo.JParameterizedType;
+import com.google.gwt.core.ext.typeinfo.JType;
+import com.google.gwt.core.ext.typeinfo.NotFoundException;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
@@ -109,9 +111,16 @@ public class PresenterGenerator extends Generator {
 		}
 		
 		if (!injector.equals(void.class)){
-			injectorMethod = getInjectorMethod(logger, injector, injectorMethod, className);
-			if (injectorMethod != null){
-				sourceWriter.println("private final " + injector.getName() + " injector = GWT.create(" + injector.getName() + ".class);");				
+			try {
+				JClassType injectorType = typeOracle.findType(injector.getName());				
+				injectorMethod = getInjectorMethod(logger, injectorType, view.injectorMethod(), className);
+				if (injectorMethod != null){
+					sourceWriter.println("private final " + injectorType.getQualifiedSourceName() + " injector = GWT.create(" + injectorType.getQualifiedSourceName() + ".class);");				
+				}
+			}
+			catch (Exception e) {
+				logger.log(Type.ERROR, "Error loading the injector class \"" + injector.getName() + "\": " + e, e);
+				throw new UnableToCompleteException();
 			}
 		}
 		
@@ -154,29 +163,28 @@ public class PresenterGenerator extends Generator {
 		sourceWriter.outdent();
 		sourceWriter.println("}\n");
 
-
 		context.commit(logger, writer);
 
 		return factory.getCreatedClassName();
 	}
 
-	private String getInjectorMethod(TreeLogger logger, Class<?> injector, String injectorMethod, String className) throws UnableToCompleteException {
+	private String getInjectorMethod(TreeLogger logger, JClassType injector, String injectorMethod, String className) throws UnableToCompleteException {
 		if (injectorMethod != null && !injectorMethod.isEmpty()){
 			try {
-				injector.getDeclaredMethod(injectorMethod);
-				return injectorMethod;
+				injector.getMethod(injectorMethod, new JType[0]);
 			}
-			catch (NoSuchMethodException e) {
-				logger.log(Type.ERROR, "The injector method \"" + injectorMethod + "\" was not found on class " + injector.getName(), e);
-				throw new UnableToCompleteException(); 
+			catch (NotFoundException e) {
+				logger.log(Type.WARN, "The injector method \"" + injectorMethod + "\" was not found on class " + injector.getQualifiedSourceName());
+				//a compiler error will be trigged if the method really doesn't exist
 			}
+			return injectorMethod;
 		}
 		else {
 			String methodName = null;
-			Method[] methods = injector.getDeclaredMethods();
-			for (Method method : methods) {
-				Class<?> returnType = method.getReturnType();
-				if (returnType.getName().equals(className)){
+			JMethod[] methods = injector.getInheritableMethods();
+			for (JMethod method : methods) {
+				JType returnType = method.getReturnType();
+				if (returnType.getQualifiedSourceName().equals(className)){
 					if (methodName != null){
 						logger.log(Type.ERROR, "The injector " + injector.getName() + " has more than one method with " + className 
 								+ " as return type. Use the \"injectorMethod\" property to specify which one should be used.");
