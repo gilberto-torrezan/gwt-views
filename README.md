@@ -186,6 +186,8 @@ public class MyPresenter implements Presenter<CustomView> {
 
 Please note that if you use a custom Presenter, you are responsible for the caching and the injection of your created View. The `cache` and `injector` properties have no effect.
 
+Hint: you can extend the `CachedPresenter` class to get the CachePolicy.SAME_URL behvior in your custom Presenter.
+
 ### Code splitting
 
 The framework automatically creates the Presenters in a way that takes care of the code-splitting for you. You don't need to worry about it, even if you use a custom Presenter. Each Presenter and the View it creates are put on the same code fragment, so each page can be handled separately from each other. You can control the number of code fragments your application produces by tweaking the `-XfragmentCount` property of the GWT compiler. Take a look at this [link](http://www.gwtproject.org/articles/fragment_merging.html) for more info about fragment merging.
@@ -249,17 +251,19 @@ Add the dependency of the GWT Views in your project:
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 	<scope>provided</scope>
 </dependency>
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 	<classifier>sources</classifier>
 	<scope>provided</scope>
 </dependency>
 ```
+
+You can download the jar directly from [The Central Repository](http://search.maven.org/#search|gav|1|g%3A%22com.github.gilberto-torrezan%22%20AND%20a%3A%22gwt-views%22) as well - gwt-views only depends on GWT itself.
 
 ### GWT module
 
@@ -299,6 +303,12 @@ When the user logs out the application, it is a good idea to clear the cache of 
 // when the user clicks on a "logout" button
 NavigationManager.clearCache();
 ```
+
+## Javadoc
+
+You can browse the project javadoc at javadoc.io:
+
+[http://www.javadoc.io/doc/com.github.gilberto-torrezan/gwt-views](http://www.javadoc.io/doc/com.github.gilberto-torrezan/gwt-views)
 	
 ## License
 

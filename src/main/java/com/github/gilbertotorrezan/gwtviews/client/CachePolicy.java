@@ -46,6 +46,7 @@ public enum CachePolicy {
 	 * parameters) is changed. If a View URL is always the same, the same View instance will be used. This is the default
 	 * behavior. 
 	 * 
+	 * @see CachedPresenter
 	 */
 	SAME_URL,
 	

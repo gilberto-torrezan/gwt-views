@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 
 import com.github.gilbertotorrezan.gwtviews.client.AutoPresenter;
 import com.github.gilbertotorrezan.gwtviews.client.CachePolicy;
+import com.github.gilbertotorrezan.gwtviews.client.CachedPresenter;
 import com.github.gilbertotorrezan.gwtviews.client.Presenter;
 import com.github.gilbertotorrezan.gwtviews.client.View;
 import com.github.gilbertotorrezan.gwtviews.client.ViewContainer;
@@ -82,11 +83,7 @@ public class PresenterGenerator extends Generator {
 		factory.addImport("com.google.gwt.core.client.GWT");
 		factory.addImport("com.google.gwt.user.client.ui.Widget");
 		factory.addImport("java.util.*");
-
-		SourceWriter sourceWriter = factory.createSourceWriter(context, writer);
-
-		sourceWriter.println("//AUTO GENERATED FILE BY GWT-VIEWS AT " + getClass().getName() + ". DO NOT EDIT!\n");
-
+		
 		View view = viewType.getAnnotation(View.class);
 		ViewContainer viewContainer = viewType.getAnnotation(ViewContainer.class);
 		
@@ -99,10 +96,16 @@ public class PresenterGenerator extends Generator {
 			cache = view.cache();
 		}
 		
-		switch (cache) {
-		case SAME_URL: sourceWriter.println("private String lastUrl;"); //not break!
-		case ALWAYS: sourceWriter.println("private Widget view; //the cached view"); break;
-		case NEVER: break;
+		if (cache == CachePolicy.SAME_URL){
+			factory.setSuperclass(CachedPresenter.class.getName());
+		}
+
+		SourceWriter sourceWriter = factory.createSourceWriter(context, writer);
+
+		sourceWriter.println("//AUTO GENERATED FILE BY GWT-VIEWS AT " + getClass().getName() + ". DO NOT EDIT!\n");
+
+		if (cache == CachePolicy.ALWAYS){
+			sourceWriter.println("private Widget view; //the cached view");
 		}
 		
 		Class<?> injector = view == null ? void.class : view.injector();
@@ -124,7 +127,12 @@ public class PresenterGenerator extends Generator {
 			}
 		}
 		
-		sourceWriter.println("\n@Override\npublic Widget getView(URLToken url) {");
+		if (cache == CachePolicy.SAME_URL){
+			sourceWriter.println("\n@Override\npublic Widget createNewView(URLToken url) {");
+		}
+		else {
+			sourceWriter.println("\n@Override\npublic Widget getView(URLToken url) {");
+		}
 		sourceWriter.indent();
 		
 		switch (cache) {
@@ -145,13 +153,8 @@ public class PresenterGenerator extends Generator {
 		break;
 		case SAME_URL: {
 			sourceWriter.println("//code for the CachePolicy.SAME_URL:");
-			sourceWriter.println("String token = url.toString();");
-			sourceWriter.println("if (view == null || lastUrl == null || !lastUrl.equals(token)) {");
-			sourceWriter.indent();
+			sourceWriter.print("Widget ");
 			printInjectorMethod(sourceWriter, className, injectorMethod);
-			sourceWriter.println("lastUrl = token;");
-			sourceWriter.outdent();
-			sourceWriter.println("}");
 		}
 		break;
 		}
