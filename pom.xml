@@ -81,6 +81,19 @@
 	</developers>
 
 	<build>
+		<resources>
+    		<resource>
+      			<directory>src/main/resources</directory>
+    		</resource>
+    		<resource>
+      			<directory>src/main/java</directory>
+      			<includes>
+        			<include>**/*.java</include>
+        			<include>**/*.gwt.xml</include>
+      			</includes>
+    		</resource>
+  		</resources>
+	
 		<!-- Configuration needed to deploy at Central: http://central.sonatype.org/pages/ossrh-guide.html 
 			http://central.sonatype.org/pages/apache-maven.html -->
 		<plugins>
