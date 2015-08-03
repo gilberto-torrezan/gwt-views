@@ -267,10 +267,11 @@ public class NavigationManagerGenerator extends Generator {
 		sourceWriter.indent();
 		
 		if (notFoundViewPage != null){
-			sourceWriter.println("History.newItem(\""+notFoundViewPage.getView().value()+"\", false);");
+			sourceWriter.println("//NotFound View");
 			sourceWriter.println("showPresenter" + notFoundViewIndex + "(new URLToken(\""+notFoundViewPage.getView().value()+"\"));");
 		}
 		else {
+			sourceWriter.println("//Default View");
 			sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"\", false);");
 			sourceWriter.println("showPresenter" + defaultViewIndex + "(new URLToken(\""+defaultViewPage.getView().value()+"\"));");			
 		}
