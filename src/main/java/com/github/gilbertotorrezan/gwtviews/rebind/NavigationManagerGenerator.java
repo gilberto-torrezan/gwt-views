@@ -132,7 +132,7 @@ public class NavigationManagerGenerator extends Generator {
 					continue;
 				}
 				HasViewPages hasViews = new HasViewPages(container, type);
-				viewContainers.put(type.getName(), hasViews);
+				viewContainers.put(type.getQualifiedSourceName(), hasViews);
 				if (container.defaultContainer()){
 					defaultViewContainerPage = hasViews;
 				}
