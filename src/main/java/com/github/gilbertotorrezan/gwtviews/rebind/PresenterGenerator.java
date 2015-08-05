@@ -115,8 +115,9 @@ public class PresenterGenerator extends Generator {
 		
 		if (!injector.equals(void.class)){
 			try {
-				JClassType injectorType = typeOracle.findType(injector.getName());				
-				injectorMethod = getInjectorMethod(logger, injectorType, view.injectorMethod(), className);
+				JClassType injectorType = typeOracle.findType(injector.getName());
+				injectorMethod = view != null ? view.injectorMethod() : viewContainer.injectorMethod();
+				injectorMethod = getInjectorMethod(logger, injectorType, injectorMethod, className);
 				if (injectorMethod != null){
 					sourceWriter.println("private final " + injectorType.getQualifiedSourceName() + " injector = GWT.create(" + injectorType.getQualifiedSourceName() + ".class);");				
 				}
