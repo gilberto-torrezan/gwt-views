@@ -80,6 +80,7 @@ public class NavigationManagerGenerator extends Generator {
 		factory.addImport("com.google.gwt.user.client.rpc.AsyncCallback");
 		factory.addImport("com.google.gwt.core.client.*");
 		factory.addImport("com.google.gwt.event.logical.shared.*");
+		factory.addImport("com.github.gilbertotorrezan.gwtviews.client.analytics.*");
 		factory.addImport("java.util.*");
 		
 		SourceWriter sourceWriter = factory.createSourceWriter(context, writer);
@@ -297,7 +298,7 @@ public class NavigationManagerGenerator extends Generator {
 			sourceWriter.println("public void onSuccess() {");
 			sourceWriter.indent();
 			
-			sourceWriter.println("GoogleAnalyticsTracker.trackPageview(token.getId());");
+			sourceWriter.println("UniversalAnalyticsTracker.sendPageView(token.toString());");
 			sourceWriter.println("Presenter<?> presenter = presentersMap.get(\""+view.value()+"\");");
 			sourceWriter.println("if (presenter == null) {");
 			sourceWriter.indent();

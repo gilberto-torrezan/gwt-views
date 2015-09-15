@@ -96,34 +96,45 @@ public class MyUserPresenceManager implements UserPresenceManager {
  
 The `isUserLoggedIn` and `isUserInAnyRole` are asynchronous by design. That is the point you will be able to communicate with the server to get more information about your user, if needed.
 
-### GoogleAnalyticsTracker
+### UniversalAnalyticsTracker
 
-The framework can log an event at Google Analytics at each change of your Views. To enable that, just configure your tracker ID and your domain (and, if you want, your GWT module as well):
+The framework can log an event at Google Analytics at each change of your Views. To enable that, just configure your tracker ID:
 
 ```java
-GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
+UniversalAnalyticsTracker.configure("MY-TRACKER-ID"); //usually in the "UA-XXXX-Y" format 
 ```
-	
-You need to include the `ga.js` file in your host page to be able to track events. Here is one way to include it:
 
-```html
-<head>
-	<script type="text/javascript">
-	    function lazyLoadScripts(){
-			function createScript(url) {
-		        var s = document.createElement('script');
-		        s.type = 'text/javascript';
-		        s.async = true;
-		        s.defer = true;
-		        s.src = url;
-		        document.getElementsByTagName('head')[0].appendChild(s);            
-		    }
-			createScript(('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js');
-	    }
-	</script>
-</head>
-<body onload="lazyLoadScripts();">
+You don't need to include the `analytics.js` into your host page - the framework includes it automatically when you call the `configure` method.
+
+The internal implementation of the analytics uses the [universal-analytics](https://github.com/ArcBees/universal-analytics) lib from ArcBees. You can setup advanced properties to your Analytics instance if you wish:
+
+```java
+public class MyApp implements EntryPoint {
+	@Override
+	public void onModuleLoad() {
+		
+		//configuring the universal analytics tracker
+		Analytics analytics = //create your instance the way you want it, setting up all the properties needed for your project
+		UniversalAnalyticsTracker.setAnalytics(analytics);
+		
+	}
+}
 ```
+
+You can reuse the Analytics object (either created by the `configure` or set by `setAnalytics` methods) to send custom data:
+
+```java
+Analytics analytics = UniversalAnalyticsTracker.getAnalytics();
+analytics.sendEvent("button", "click").eventLabel("my cool button was clicked").go();
+```
+
+You can also set an userId as well to your tracker, to enable per-user analytics. To do so, simply call:
+
+ ```java
+ UniversalAnalyticsTracker.configure("MY-TRACKER-ID", "userId"); //the userId must be a string that you can use to identify your user at the analytics dashboard
+ ```
+ 
+You can find more about the universal analytics at the [Google Developers](https://developers.google.com/analytics/devguides/collection/analyticsjs/) page.
 
 ### Caching
 
@@ -251,12 +262,12 @@ Add the dependency of the GWT Views in your project:
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.2.4</version>
+	<version>1.3.0</version>
 	<scope>provided</scope>
 </dependency>
 ```
 
-You can download the jar directly from [The Central Repository](http://search.maven.org/#search|gav|1|g%3A%22com.github.gilberto-torrezan%22%20AND%20a%3A%22gwt-views%22) as well - gwt-views only depends on GWT itself.
+You can download the jar directly from [The Central Repository](http://search.maven.org/#search|gav|1|g%3A%22com.github.gilberto-torrezan%22%20AND%20a%3A%22gwt-views%22) as well. Please note that by downloading separately you need to add all the dependencies manually.
 
 ### GWT module
 
@@ -275,8 +286,8 @@ public class MyApp implements EntryPoint {
 	@Override
 	public void onModuleLoad() {
 		
-		//configuring the google analytics tracker
-		GoogleAnalyticsTracker.configure("MY-TRACKER-ID", "my.domain.com", "my.module");
+		//configuring the universal analytics tracker
+		UniversalAnalyticsTracker.configure("MY-TRACKER-ID");
 		
 		//configuring the user presence manager			
 		NavigationManager.setUserPresenceManager(new MyUserPresenceManager());

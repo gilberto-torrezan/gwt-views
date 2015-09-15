@@ -4,6 +4,8 @@
 	<!-- Module inherits -->
 	<inherits name='com.google.gwt.user.User' />
 	<inherits name='com.google.gwt.place.Place' />
+	<inherits name="com.google.gwt.inject.Inject"/>
+	<inherits name="com.arcbees.analytics.Analytics"/>
 	
 	<generate-with class="com.github.gilbertotorrezan.gwtviews.rebind.NavigationManagerGenerator">
 		<when-type-assignable class="com.github.gilbertotorrezan.gwtviews.client.INavigationManager"/>
