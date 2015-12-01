@@ -172,7 +172,14 @@ public class InjectedView extends Composite {
 //...
 ```
 
-The GWT Views framework doesn't have any dependency to any framework other than GWT itself, so if you want to add a dependency injection framework to your project, you are free to choose whatever you want.
+To set a injector instance to be used across the application, you can use the `setInjectorInstance` from the NavigationManager:
+
+```java
+MyInjector injectorInstance = GWT.create(MyInjector.class); //or you can create it in another way
+NavigationManager.setInjectorInstance(MyInjector.class, injectorInstance);
+```
+
+When not set, a new injector is created every time a view is invoked.
 
 ### Custom Presenters
 
@@ -262,7 +269,7 @@ Add the dependency of the GWT Views in your project:
 <dependency>
 	<groupId>com.github.gilberto-torrezan</groupId>
 	<artifactId>gwt-views</artifactId>
-	<version>1.3.0</version>
+	<version>1.3.1</version>
 	<scope>provided</scope>
 </dependency>
 ```

@@ -88,6 +88,7 @@ public class PresenterGenerator extends Generator {
 		ViewContainer viewContainer = viewType.getAnnotation(ViewContainer.class);
 		
 		CachePolicy cache;
+		JClassType injectorType = null;
 		String injectorMethod = null;
 		if (view == null){
 			cache = CachePolicy.ALWAYS;
@@ -115,12 +116,9 @@ public class PresenterGenerator extends Generator {
 		
 		if (!injector.equals(void.class)){
 			try {
-				JClassType injectorType = typeOracle.findType(injector.getName());
+				injectorType = typeOracle.findType(injector.getName());
 				injectorMethod = view != null ? view.injectorMethod() : viewContainer.injectorMethod();
 				injectorMethod = getInjectorMethod(logger, injectorType, injectorMethod, className);
-				if (injectorMethod != null){
-					sourceWriter.println("private final " + injectorType.getQualifiedSourceName() + " injector = GWT.create(" + injectorType.getQualifiedSourceName() + ".class);");				
-				}
 			}
 			catch (Exception e) {
 				logger.log(Type.ERROR, "Error loading the injector class \"" + injector.getName() + "\": " + e, e);
@@ -140,14 +138,14 @@ public class PresenterGenerator extends Generator {
 		case NEVER: {
 			sourceWriter.println("//code for the CachePolicy.NEVER:");
 			sourceWriter.print("Widget ");
-			printInjectorMethod(sourceWriter, className, injectorMethod);
+			printInjectorMethod(sourceWriter, className, injectorType, injectorMethod);
 		}
 		break;
 		case ALWAYS: {
 			sourceWriter.println("//code for the CachePolicy.ALWAYS:");
 			sourceWriter.println("if (view == null) {");
 			sourceWriter.indent();
-			printInjectorMethod(sourceWriter, className, injectorMethod);
+			printInjectorMethod(sourceWriter, className, injectorType, injectorMethod);
 			sourceWriter.outdent();
 			sourceWriter.println("}");
 		}
@@ -155,7 +153,7 @@ public class PresenterGenerator extends Generator {
 		case SAME_URL: {
 			sourceWriter.println("//code for the CachePolicy.SAME_URL:");
 			sourceWriter.print("Widget ");
-			printInjectorMethod(sourceWriter, className, injectorMethod);
+			printInjectorMethod(sourceWriter, className, injectorType, injectorMethod);
 		}
 		break;
 		}
@@ -206,8 +204,10 @@ public class PresenterGenerator extends Generator {
 		}
 	}
 	
-	private void printInjectorMethod(SourceWriter sourceWriter, String className, String injectorMethod){
-		if (injectorMethod != null){
+	private void printInjectorMethod(SourceWriter sourceWriter, String className, JClassType injectorType, String injectorMethod){
+		if (injectorType != null && injectorMethod != null){
+			sourceWriter.println(injectorType.getQualifiedSourceName() + " injector = NavigationManager.getInjectorInstance(" + injectorType.getQualifiedSourceName() + ".class);");
+			sourceWriter.println("if (injector == null) injector = GWT.create(" + injectorType.getQualifiedSourceName() + ".class);");
 			sourceWriter.println("view = (" + className + ") injector." + injectorMethod + "();");
 		}
 		else {

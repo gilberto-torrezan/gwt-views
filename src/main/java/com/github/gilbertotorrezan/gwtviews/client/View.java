@@ -115,6 +115,9 @@ public @interface View {
 	
 	/**
 	 * Defines a injector to be used to instantiate this View. Useful when using dependency injection frameworks such as GIN.
+	 * 
+	 * To use a single instance of the injector, you can call {@link NavigationManager#setInjectorInstance(Class, Object)}, using the same
+	 * Class literal used in this annotation.
 	 */
 	Class<?> injector() default void.class;
 	

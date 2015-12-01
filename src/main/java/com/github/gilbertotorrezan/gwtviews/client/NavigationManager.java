@@ -24,6 +24,9 @@
  */
 package com.github.gilbertotorrezan.gwtviews.client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Panel;
@@ -38,6 +41,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class NavigationManager {
 	
 	private static final INavigationManager manager = GWT.create(INavigationManager.class);
+	private static final Map<Class<?>, Object> injectorsMap = new HashMap<>();
 	
 	private NavigationManager(){}
 	
@@ -75,5 +79,36 @@ public class NavigationManager {
 	 */
 	public static void clearCache(String tokenId) {
 		manager.clearCache(tokenId);
+	}
+	
+	/**
+	 * Sets the injector instance to be used internally by the framework to inject views. If an injector instance is not declared here,
+	 * a new instance is created every time a view is invoked.
+	 * 
+	 * @param injectorClass The class literal of the injector.
+	 * @param injectorInstance The injector instance to be used.
+	 * 
+	 * @see View#injector()
+	 * @since v.1.3.1
+	 */
+	public static <T> void setInjectorInstance(Class<T> injectorClass, T injectorInstance) {
+		if (injectorInstance == null){
+			injectorsMap.remove(injectorClass);
+		}
+		injectorsMap.put(injectorClass, injectorInstance);
+	}
+	
+	/**
+	 * Gets the current injector instance associated to the injector class literal. This method is called internally by the framework
+	 * to determine which injector instance should be used when injecting views.
+	 * 
+	 * @param injectorClass The class literal of the injector.
+	 * @return The injector instance previously set on {@link #setInjectorInstance(Class, Object)}
+	 * 
+	 * @since v.1.3.1 
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getInjectorInstance(Class<T> injectorClass) {
+		return (T) injectorsMap.get(injectorClass);
 	}
 }
