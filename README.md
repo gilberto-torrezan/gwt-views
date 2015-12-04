@@ -1,5 +1,7 @@
 # GWT Views
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gilberto-torrezan/gwt-views?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 A simple but powerful View controller for GWT.
 
 ## What does it do?
