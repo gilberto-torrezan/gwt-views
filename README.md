@@ -1,6 +1,7 @@
 # GWT Views
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gilberto-torrezan/gwt-views?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://travis-ci.org/gilberto-torrezan/gwt-views.svg?branch=master)](https://travis-ci.org/gilberto-torrezan/gwt-views)
 
 A simple but powerful View controller for GWT.
 
