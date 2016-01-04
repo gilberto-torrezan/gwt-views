@@ -80,24 +80,18 @@ public class MyApp implements EntryPoint {
 }
 ```
 	
-The `MyUserPresenceManager` class only need to implement two methods:
+The `MyUserPresenceManager` class only need to implement one method:
 
 ```java
 public class MyUserPresenceManager implements UserPresenceManager {
-	
-	@Override
-	public void isUserLoggedIn(URLToken url, AsyncCallback<Boolean> callback) {
-		//call callback.onSucess(true) if the user is logged in, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise. 
-	}
-
 	@Override
 	public void isUserInAnyRole(URLToken url, String[] roles, AsyncCallback<Boolean> callback) {
-		//call callback.onSucess(true) if the user is in any of the roles, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise.
+		//call callback.onSucess(true) if the user is logged in and is in any of the roles, or callback.onSucess(false) or callback.onFailure(Throwable) otherwise.
 	}
 }
 ```
  
-The `isUserLoggedIn` and `isUserInAnyRole` are asynchronous by design. That is the point you will be able to communicate with the server to get more information about your user, if needed.
+The `isUserInAnyRole` method is asynchronous by design. That is the point you will be able to communicate with the server to get more information about your user, if needed.
 
 ### UniversalAnalyticsTracker
 
