@@ -1,7 +1,7 @@
 /*
  * The MIT License (MIT)
  * 
- * Copyright (c) 2015 Gilberto Torrezan Filho
+ * Copyright (c) 2016 Gilberto Torrezan Filho
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,28 +24,33 @@
  */
 package com.github.gilbertotorrezan.gwtviews.client;
 
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.History;
 
 /**
- * Internal class used to dynamically create the implementation of the {@link NavigationManager}.
+ * <p>
+ * URLTokenFactory is a factory class that creates {@link URLToken}s based on an input
+ * String. That String is usually the return of the {@link History#getToken()} method.
+ * </p>
+ * <p>
+ * This class que be overriden to provide subclasses of {@link URLToken} with custom behaviour,
+ * such as different token schemas and layouts.
+ * </p>
  * 
  * @author Gilberto Torrezan Filho
  *
- * @since v.1.0.0
+ * @since v.1.4.0
  */
-public interface INavigationManager extends ValueChangeHandler<String> {
+public class URLTokenFactory {
 	
-	void setRootContainer(Panel container);
-	
-	void setUserPresenceManager(UserPresenceManager manager);
-	
-	void clearCache();
-	
-	void clearCache(String tokenId);
-	
-	void setURLTokenFactory(URLTokenFactory tokenFactory);
-	
-	URLTokenFactory getURLTokenFactory();
+	/**
+	 * Creates a new {@link URLToken} based on the {@link History#getToken()} String.
+	 * By default it creates a new URLToken by using the {@link #URLToken(String)} constructor.
+	 * 
+	 * @param completeToken The token String to be used
+	 * @return a new URLToken (or any subclass)
+	 */
+	public URLToken createToken(String completeToken) {
+		return new URLToken(completeToken);
+	}
 
 }

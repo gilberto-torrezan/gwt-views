@@ -111,4 +111,28 @@ public class NavigationManager {
 	public static <T> T getInjectorInstance(Class<T> injectorClass) {
 		return (T) injectorsMap.get(injectorClass);
 	}
+	
+	/**
+	 * Sets the {@link URLTokenFactory} to be used by the framework to create new instances of {@link URLToken}.
+	 * 
+	 * This is used to provide custom {@link URLToken} subclasses with different behaviour when needed.
+	 * 
+	 * @param tokenFactory The URLTokenFactory instance
+	 * 
+	 * @since v.1.4.0
+	 */
+	public static void setURLTokenFactory(URLTokenFactory tokenFactory) {
+		manager.setURLTokenFactory(tokenFactory);
+	}
+	
+	/**
+	 * Gets the current {@link URLTokenFactory} used by the framework.
+	 * 
+	 * @return The instance of URLTokenFactory used to create new instances of {@link URLToken}.
+	 * 
+	 * @since v.1.4.0
+	 */
+	public URLTokenFactory getURLTokenFactory() {
+		return manager.getURLTokenFactory();
+	}
 }

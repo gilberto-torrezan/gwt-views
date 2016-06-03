@@ -96,8 +96,9 @@ public class NavigationManagerGenerator extends Generator {
 		
 		sourceWriter.println("private Panel rootContainer;");
 		sourceWriter.println("private UserPresenceManager userPresenceManager;");
+		sourceWriter.println("private URLTokenFactory tokenFactory = new URLTokenFactory();");
 		sourceWriter.println("private final Map<String, Presenter<?>> presentersMap = new HashMap<>();");
-		sourceWriter.println("private URLToken currentToken = new URLToken(\"\");");
+		sourceWriter.println("private URLToken currentToken = tokenFactory.createToken(\"\");");
 		sourceWriter.println("private URLInterceptor currentInterceptor;\n");
 		
 		List<ViewPage> viewPages = new ArrayList<>();
@@ -163,7 +164,7 @@ public class NavigationManagerGenerator extends Generator {
 		
 		sourceWriter.println("public void onValueChange(ValueChangeEvent<String> event){");
 		sourceWriter.indent();
-		sourceWriter.println("final URLToken token = new URLToken(event.getValue());");
+		sourceWriter.println("final URLToken token = tokenFactory.createToken(event.getValue());");
 		
 		sourceWriter.println("if (currentInterceptor != null){");
 		sourceWriter.indent();
@@ -241,7 +242,9 @@ public class NavigationManagerGenerator extends Generator {
 				sourceWriter.indent();
 				sourceWriter.println("if (allowed == null || !allowed){");
 				sourceWriter.indent();
-				sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"&next='\"+URL.encodeQueryString(token.toString())+\"'\", true);");
+				sourceWriter.println("URLToken nextToken = tokenFactory.createToken(\""+defaultViewPage.getView().value()+"\");");
+				sourceWriter.println("nextToken.setParameter(\"next\", URL.encodeQueryString(token.toString()));");
+				sourceWriter.println("nextToken.go();");
 				sourceWriter.outdent();
 				sourceWriter.println("}");
 				sourceWriter.println("else {");
@@ -255,7 +258,9 @@ public class NavigationManagerGenerator extends Generator {
 				sourceWriter.println("public void onFailure(Throwable error){");
 				sourceWriter.indent();
 				sourceWriter.println("GWT.log(\"Error loading view: \" + error, error);");
-				sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"&next='\"+URL.encodeQueryString(token.toString())+\"'\", true);");
+				sourceWriter.println("URLToken nextToken = tokenFactory.createToken(\""+defaultViewPage.getView().value()+"\");");
+				sourceWriter.println("nextToken.setParameter(\"next\", URL.encodeQueryString(token.toString()));");
+				sourceWriter.println("nextToken.go();");
 				sourceWriter.outdent();
 				sourceWriter.println("}");
 				sourceWriter.outdent();
@@ -276,12 +281,12 @@ public class NavigationManagerGenerator extends Generator {
 		
 		if (notFoundViewPage != null){
 			sourceWriter.println("//NotFound View");
-			sourceWriter.println("showPresenter" + notFoundViewIndex + "(new URLToken(\""+notFoundViewPage.getView().value()+"\"));");
+			sourceWriter.println("showPresenter" + notFoundViewIndex + "(tokenFactory.createToken(\""+notFoundViewPage.getView().value()+"\"));");
 		}
 		else {
 			sourceWriter.println("//Default View");
 			sourceWriter.println("History.newItem(\""+defaultViewPage.getView().value()+"\", false);");
-			sourceWriter.println("showPresenter" + defaultViewIndex + "(new URLToken(\""+defaultViewPage.getView().value()+"\"));");			
+			sourceWriter.println("showPresenter" + defaultViewIndex + "(tokenFactory.createToken(\""+defaultViewPage.getView().value()+"\"));");			
 		}
 		sourceWriter.outdent();
 		sourceWriter.println("}\nbreak;");
@@ -413,6 +418,18 @@ public class NavigationManagerGenerator extends Generator {
 		sourceWriter.println("@Override\npublic void setUserPresenceManager(UserPresenceManager umanager) {");
 		sourceWriter.indent();
 		sourceWriter.println("this.userPresenceManager = umanager;");
+		sourceWriter.outdent();
+		sourceWriter.println("}\n");
+		
+		sourceWriter.println("@Override\npublic void setURLTokenFactory(URLTokenFactory tokenFactory) {");
+		sourceWriter.indent();
+		sourceWriter.println("this.tokenFactory = tokenFactory;");
+		sourceWriter.outdent();
+		sourceWriter.println("}\n");
+		
+		sourceWriter.println("@Override\npublic URLTokenFactory getURLTokenFactory() {");
+		sourceWriter.indent();
+		sourceWriter.println("return this.tokenFactory;");
 		sourceWriter.outdent();
 		sourceWriter.println("}\n");
 		
